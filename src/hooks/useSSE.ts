@@ -26,7 +26,7 @@ export function useSSE({ onThought, onContent, onComplete, onError }: UseSSEOpti
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer e9QyzZfgMk43Re2tsgwGzFWFHGv3P94g',
+          'Token': 'e9QyzZfgMk43Re2tsgwGzFWFHGv3P94g',
         },
         body: JSON.stringify({ messages, ...params }),
         signal: controller.signal,
@@ -34,6 +34,15 @@ export function useSSE({ onThought, onContent, onComplete, onError }: UseSSEOpti
 
       if (!res.ok) {
         throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+      }
+
+      // Check if response is a JSON error (some APIs return 200 with error body)
+      const contentType = res.headers.get('content-type') || '';
+      if (contentType.includes('application/json') && !contentType.includes('stream')) {
+        const json = await res.json();
+        if (json.code && json.code !== 200) {
+          throw new Error(json.error || json.message || `API Error ${json.code}`);
+        }
       }
 
       const reader = res.body?.getReader();
