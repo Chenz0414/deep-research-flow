@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Circle, Play, Send, Pencil } from 'lucide-react';
+import { Circle, Play, Send, Pencil, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import {
   Dialog,
   DialogContent,
@@ -66,31 +65,40 @@ export function ResearchPlanCard({ planText, statusText, onEdit, onStart, isLoad
       <motion.div
         initial={{ opacity: 0, scale: 0.97 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.35 }}
+        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
         className="w-full max-w-2xl mx-auto"
       >
-        <div className="rounded-xl border bg-card shadow-sm overflow-hidden">
+        <div className="rounded-xl glass-panel shadow-lg overflow-hidden">
           {/* Header */}
-          <div className="px-6 py-5 border-b bg-muted/30">
-            <h2 className="text-lg font-semibold text-foreground">研究调研计划</h2>
-            <p className="text-sm text-muted-foreground mt-1">
-              AI 已为您生成以下研究大纲，请确认后开始深度研究。
-            </p>
+          <div className="px-6 py-5 border-b border-border/40" style={{ background: 'hsl(var(--muted) / 0.3)' }}>
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                <Sparkles className="w-4 h-4 text-primary" />
+              </div>
+              <div>
+                <h2 className="text-base font-semibold text-foreground">研究调研计划</h2>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  AI 已为您生成以下研究大纲，请确认后开始深度研究。
+                </p>
+              </div>
+            </div>
           </div>
 
           {/* Content */}
-          <div className="px-6 py-4">
-            <motion.div className="space-y-3">
+          <div className="px-6 py-5">
+            <motion.div className="space-y-2">
               {sections.map((section, i) => (
                 <motion.div
                   key={i}
-                  initial={{ opacity: 0, x: -6 }}
+                  initial={{ opacity: 0, x: -8 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.06 }}
-                  className="flex items-start gap-3 py-2"
+                  transition={{ delay: i * 0.06, duration: 0.35 }}
+                  className="flex items-start gap-3 py-2.5 px-3 rounded-lg hover:bg-muted/30 transition-colors"
                 >
-                  <div className="mt-0.5 flex-shrink-0">
-                    <Circle className="w-4 h-4 text-primary/50" strokeWidth={2} />
+                  <div className="mt-1 flex-shrink-0">
+                    <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center">
+                      <Circle className="w-2.5 h-2.5 text-primary/60" strokeWidth={3} />
+                    </div>
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-foreground">{section.title}</p>
@@ -106,16 +114,16 @@ export function ResearchPlanCard({ planText, statusText, onEdit, onStart, isLoad
           </div>
 
           {/* Footer */}
-          <div className="px-6 py-4 border-t bg-muted/20 flex items-center justify-between">
-            <p className="text-xs text-muted-foreground/70 italic">
+          <div className="px-6 py-4 border-t border-border/40 flex items-center justify-between" style={{ background: 'hsl(var(--muted) / 0.15)' }}>
+            <p className="text-[11px] text-muted-foreground/50 italic">
               {statusText || 'Organizing details...'}
             </p>
             <div className="flex items-center gap-2">
-              <Button variant="ghost" size="sm" onClick={() => { setRequirement(''); setDialogOpen(true); }}>
+              <Button variant="ghost" size="sm" onClick={() => { setRequirement(''); setDialogOpen(true); }} className="text-xs">
                 <Pencil className="w-3.5 h-3.5 mr-1.5" />
                 修改计划
               </Button>
-              <Button size="sm" onClick={onStart} disabled={isLoading}>
+              <Button size="sm" onClick={onStart} disabled={isLoading} className="shadow-sm">
                 <Play className="w-3.5 h-3.5 mr-1.5" />
                 开始研究
               </Button>
@@ -138,13 +146,14 @@ export function ResearchPlanCard({ planText, statusText, onEdit, onStart, isLoad
               onChange={(e) => setRequirement(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="描述您的新需求..."
-              className="flex min-h-[120px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 resize-none"
+              className="flex min-h-[120px] w-full rounded-lg border border-input bg-background px-4 py-3 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 resize-none"
               autoFocus
             />
             <div className="flex justify-end">
               <Button
                 onClick={handleSubmitRequirement}
                 disabled={!requirement.trim()}
+                className="shadow-sm"
               >
                 <Send className="w-4 h-4 mr-1.5" />
                 提交修改

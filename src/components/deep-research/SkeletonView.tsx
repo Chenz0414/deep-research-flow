@@ -1,4 +1,3 @@
-import { Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export function SkeletonView() {
@@ -6,16 +5,43 @@ export function SkeletonView() {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="flex flex-col items-center justify-center h-full gap-4"
+      className="flex flex-col items-center justify-center h-full gap-6 relative"
     >
-      <Loader2 className="w-8 h-8 text-primary animate-spin-slow" />
-      <p className="text-sm text-muted-foreground">正在生成研究计划...</p>
-      <div className="w-full max-w-md space-y-3 px-8 mt-4">
+      {/* Background glow */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[300px] h-[200px] rounded-full opacity-[0.05]"
+          style={{ background: 'radial-gradient(circle, hsl(var(--primary)), transparent 70%)' }} />
+      </div>
+
+      {/* Animated spinner */}
+      <div className="relative w-12 h-12">
+        <motion.div
+          className="absolute inset-0 rounded-full border-2 border-primary/20"
+        />
+        <motion.div
+          className="absolute inset-0 rounded-full border-2 border-transparent border-t-primary"
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
+        />
+      </div>
+
+      <div className="text-center space-y-1.5">
+        <p className="text-sm font-medium text-foreground/80">正在生成研究计划</p>
+        <p className="text-xs text-muted-foreground">AI 正在分析您的研究主题...</p>
+      </div>
+
+      <div className="w-full max-w-sm space-y-3 px-8 mt-2">
         {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="space-y-2 animate-pulse" style={{ animationDelay: `${i * 150}ms` }}>
-            <div className="h-4 bg-muted rounded w-3/4" />
-            <div className="h-3 bg-muted/60 rounded w-1/2" />
-          </div>
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, x: -8 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: i * 0.15 }}
+            className="space-y-2"
+          >
+            <div className="h-4 bg-muted/80 rounded-md animate-pulse" style={{ width: `${85 - i * 8}%`, animationDelay: `${i * 150}ms` }} />
+            <div className="h-3 bg-muted/50 rounded-md animate-pulse" style={{ width: `${60 - i * 5}%`, animationDelay: `${i * 150 + 75}ms` }} />
+          </motion.div>
         ))}
       </div>
     </motion.div>

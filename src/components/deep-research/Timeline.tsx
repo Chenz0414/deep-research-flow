@@ -27,10 +27,10 @@ export function Timeline({ thoughts, isActive }: TimelineProps) {
   if (thoughts.length === 0 && !isActive) return null;
 
   return (
-    <div className="flex-1 overflow-y-auto px-4 py-4 scrollbar-thin">
+    <div className="flex-1 overflow-y-auto px-5 py-4 scrollbar-thin">
       <div className="relative">
         {/* Vertical line */}
-        <div className="absolute left-3 top-0 bottom-0 w-px bg-timeline-line" />
+        <div className="absolute left-[11px] top-2 bottom-2 w-px bg-border/60" />
 
         <div className="space-y-1">
           {thoughts.map((thought, i) => {
@@ -48,29 +48,29 @@ export function Timeline({ thoughts, isActive }: TimelineProps) {
               >
                 {/* Dot */}
                 <div className="relative z-10 flex-shrink-0 mt-0.5">
-                  <div className={`w-6 h-6 rounded-full flex items-center justify-center ${
-                    isSearching 
-                      ? 'bg-primary/15 text-primary' 
-                      : isLast && isActive 
-                        ? 'bg-primary/15 text-primary' 
+                  <div className={`w-6 h-6 rounded-full flex items-center justify-center transition-colors ${
+                    isSearching
+                      ? 'bg-primary/15 text-primary ring-2 ring-primary/10'
+                      : isLast && isActive
+                        ? 'bg-primary/15 text-primary ring-2 ring-primary/10'
                         : 'bg-muted text-muted-foreground'
                   }`}>
                     {isSearching ? (
-                      <Loader2 className="w-3.5 h-3.5 animate-spin-slow" />
+                      <Loader2 className="w-3 h-3 animate-spin" style={{ animationDuration: '2s' }} />
                     ) : isLast && isActive ? (
-                      <Icon className="w-3.5 h-3.5 animate-pulse-dot" />
+                      <Icon className="w-3 h-3 animate-pulse-dot" />
                     ) : (
-                      <CheckCircle2 className="w-3.5 h-3.5 text-timeline-dot-done" />
+                      <CheckCircle2 className="w-3 h-3 text-timeline-dot-done" />
                     )}
                   </div>
                 </div>
 
                 {/* Content */}
                 <div className="flex-1 min-w-0 pb-3">
-                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider font-mono">
+                  <p className="text-[10px] font-semibold text-muted-foreground/60 uppercase tracking-[0.12em]">
                     {labelMap[thought.type]}
                   </p>
-                  <p className="text-sm text-foreground/80 mt-0.5 line-clamp-2 leading-relaxed">
+                  <p className="text-xs text-foreground/70 mt-0.5 line-clamp-2 leading-relaxed">
                     {thought.content}
                   </p>
                 </div>

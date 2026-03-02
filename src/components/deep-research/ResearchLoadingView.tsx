@@ -13,28 +13,36 @@ export function ResearchLoadingView() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="flex flex-col items-center justify-center h-full gap-8"
+      className="flex flex-col items-center justify-center h-full gap-10 relative"
     >
+      {/* Background glow */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[400px] h-[300px] rounded-full opacity-[0.06]"
+          style={{ background: 'radial-gradient(circle, hsl(var(--primary)), transparent 70%)' }} />
+      </div>
+
       {/* Animated orb */}
-      <div className="relative w-24 h-24">
+      <div className="relative w-28 h-28">
         <motion.div
-          className="absolute inset-0 rounded-full bg-primary/10"
-          animate={{ scale: [1, 1.3, 1], opacity: [0.3, 0.1, 0.3] }}
-          transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
+          className="absolute inset-0 rounded-full"
+          style={{ background: 'radial-gradient(circle, hsl(var(--primary) / 0.08), transparent 70%)' }}
+          animate={{ scale: [1, 1.4, 1], opacity: [0.3, 0.08, 0.3] }}
+          transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
         />
         <motion.div
-          className="absolute inset-2 rounded-full bg-primary/15"
-          animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0.2, 0.5] }}
-          transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut', delay: 0.3 }}
+          className="absolute inset-3 rounded-full"
+          style={{ background: 'radial-gradient(circle, hsl(var(--primary) / 0.12), transparent 70%)' }}
+          animate={{ scale: [1, 1.25, 1], opacity: [0.5, 0.15, 0.5] }}
+          transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut', delay: 0.3 }}
         />
         <motion.div
-          className="absolute inset-4 rounded-full bg-primary/20 flex items-center justify-center"
-          animate={{ scale: [1, 1.1, 1] }}
-          transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
+          className="absolute inset-6 rounded-full bg-primary/10 border border-primary/15 flex items-center justify-center glow-sm"
+          animate={{ scale: [1, 1.08, 1] }}
+          transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
         >
           <motion.div
             animate={{ rotate: 360 }}
-            transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
+            transition={{ duration: 10, repeat: Infinity, ease: 'linear' }}
           >
             <Brain className="w-8 h-8 text-primary" />
           </motion.div>
@@ -42,7 +50,7 @@ export function ResearchLoadingView() {
       </div>
 
       {/* Title */}
-      <div className="text-center space-y-2">
+      <div className="text-center space-y-2 relative z-10">
         <motion.h2
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
@@ -62,7 +70,7 @@ export function ResearchLoadingView() {
       </div>
 
       {/* Animated steps */}
-      <div className="space-y-4 w-full max-w-xs">
+      <div className="space-y-4 w-full max-w-xs relative z-10">
         {steps.map((step, i) => (
           <motion.div
             key={i}
@@ -72,19 +80,17 @@ export function ResearchLoadingView() {
             className="flex items-center gap-3"
           >
             <motion.div
-              className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0"
+              className="w-9 h-9 rounded-xl bg-primary/8 border border-primary/10 flex items-center justify-center flex-shrink-0"
               animate={{ opacity: [0.5, 1, 0.5] }}
               transition={{ duration: 1.5, repeat: Infinity, delay: step.delay }}
             >
               <step.icon className="w-4 h-4 text-primary" />
             </motion.div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm text-foreground/80">{step.label}</p>
-              <motion.div
-                className="h-1 bg-primary/20 rounded-full mt-1.5 overflow-hidden"
-              >
+              <p className="text-sm text-foreground/70">{step.label}</p>
+              <motion.div className="h-1 bg-primary/10 rounded-full mt-2 overflow-hidden">
                 <motion.div
-                  className="h-full bg-primary/50 rounded-full"
+                  className="h-full bg-primary/40 rounded-full"
                   initial={{ width: '0%' }}
                   animate={{ width: '100%' }}
                   transition={{ duration: 3, delay: 1 + step.delay, ease: 'easeInOut' }}
