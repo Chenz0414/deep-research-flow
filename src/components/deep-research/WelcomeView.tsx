@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, Send, BookOpen, Brain, FileText, Zap, Globe, Shield, ChevronDown, Star, MessageSquare } from 'lucide-react';
+import { Sparkles, Send, BookOpen, Brain, FileText, Zap, Globe, Shield, ChevronDown, Star, MessageSquare, ArrowRight, TrendingUp, Cpu, Microscope } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 
@@ -9,10 +9,17 @@ interface WelcomeViewProps {
 }
 
 const SEARCH_MODES = [
-  { label: '快速模式', step: 1, cost: 10, desc: '基础搜索，快速出结果' },
-  { label: '标准模式', step: 2, cost: 15, desc: '中等搜索，平衡效率与质量' },
-  { label: '深度模式', step: 3, cost: 20, desc: '深度搜索，最全面的结果' },
+  { label: '快速', step: 1, cost: 10, icon: Zap },
+  { label: '标准', step: 2, cost: 15, icon: TrendingUp },
+  { label: '深度', step: 3, cost: 20, icon: Microscope },
 ] as const;
+
+const QUICK_TOPICS = [
+  { text: '2025年AI Agent行业全景分析', icon: Cpu },
+  { text: '新能源汽车市场竞争格局研究', icon: TrendingUp },
+  { text: '大语言模型商业化落地路径', icon: Brain },
+  { text: 'Web3与去中心化金融发展趋势', icon: Globe },
+];
 
 const FEATURES = [
   { icon: Brain, title: '智能大纲生成', desc: 'AI 自动分析主题，生成结构化研究计划' },
@@ -119,43 +126,11 @@ export function WelcomeView({ onSend }: WelcomeViewProps) {
             ))}
           </div>
 
-          {/* Mode selector */}
+          {/* Input area with inline mode selector */}
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5, duration: 0.5 }}
-            className="flex items-center justify-center gap-2"
-          >
-            {SEARCH_MODES.map((mode) => (
-              <button
-                key={mode.step}
-                onClick={() => setSelectedStep(mode.step)}
-                className={`relative px-4 py-2.5 rounded-lg text-xs font-medium transition-all duration-200 border ${
-                  selectedStep === mode.step
-                    ? 'bg-primary/10 border-primary/30 text-primary shadow-sm'
-                    : 'bg-card/60 border-border/50 text-muted-foreground hover:border-primary/20 hover:text-foreground'
-                }`}
-              >
-                <span className="block">{mode.label}</span>
-                <span className={`block text-[10px] mt-0.5 ${selectedStep === mode.step ? 'text-primary/70' : 'text-muted-foreground/60'}`}>
-                  消耗 {mode.cost} 配额
-                </span>
-                {selectedStep === mode.step && (
-                  <motion.div
-                    layoutId="mode-indicator"
-                    className="absolute inset-0 rounded-lg border-2 border-primary/30"
-                    transition={{ type: 'spring', bounce: 0.2, duration: 0.4 }}
-                  />
-                )}
-              </button>
-            ))}
-          </motion.div>
-
-          {/* Input */}
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6, duration: 0.5 }}
             className="relative group"
           >
             <div className="absolute -inset-px rounded-xl bg-primary/10 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 blur-sm" />
@@ -166,21 +141,74 @@ export function WelcomeView({ onSend }: WelcomeViewProps) {
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder="输入您的研究主题，例如：人工智能在医疗领域的应用前景..."
-                className="pr-14 min-h-[110px] max-h-[180px] resize-none text-sm border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
-                rows={4}
+                className="pr-14 min-h-[100px] max-h-[180px] resize-none text-sm border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
+                rows={3}
               />
-              <Button
-                size="icon"
-                onClick={handleSubmit}
-                disabled={!input.trim()}
-                className="absolute bottom-3 right-3 h-9 w-9 rounded-lg shadow-lg"
-              >
-                <Send className="w-4 h-4" />
-              </Button>
+              {/* Bottom bar: mode selector + send */}
+              <div className="flex items-center justify-between px-3 pb-3">
+                <div className="flex items-center gap-1 bg-muted/40 rounded-lg p-0.5">
+                  {SEARCH_MODES.map((mode) => {
+                    const ModeIcon = mode.icon;
+                    const isSelected = selectedStep === mode.step;
+                    return (
+                      <button
+                        key={mode.step}
+                        onClick={() => setSelectedStep(mode.step)}
+                        className={`relative flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[11px] font-medium transition-all duration-200 ${
+                          isSelected
+                            ? 'bg-background text-primary shadow-sm'
+                            : 'text-muted-foreground hover:text-foreground'
+                        }`}
+                      >
+                        <ModeIcon className="w-3 h-3" />
+                        <span>{mode.label}</span>
+                        <span className={`text-[9px] ${isSelected ? 'text-primary/60' : 'text-muted-foreground/50'}`}>
+                          {mode.cost}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+                <Button
+                  size="icon"
+                  onClick={handleSubmit}
+                  disabled={!input.trim()}
+                  className="h-8 w-8 rounded-lg shadow-sm"
+                >
+                  <Send className="w-3.5 h-3.5" />
+                </Button>
+              </div>
             </div>
-            <p className="text-[11px] text-muted-foreground/50 text-center mt-2">
-              当前：{SEARCH_MODES.find(m => m.step === selectedStep)?.desc}
-            </p>
+          </motion.div>
+
+          {/* Quick topics */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.7, duration: 0.5 }}
+            className="grid grid-cols-2 gap-2"
+          >
+            {QUICK_TOPICS.map((topic, i) => {
+              const TopicIcon = topic.icon;
+              return (
+                <motion.button
+                  key={i}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.75 + i * 0.06 }}
+                  onClick={() => onSend(topic.text, selectedStep)}
+                  className="group/topic flex items-center gap-3 px-4 py-3 rounded-xl border border-border/40 bg-card/40 hover:bg-primary/5 hover:border-primary/20 transition-all duration-200 text-left"
+                >
+                  <div className="w-7 h-7 rounded-lg bg-primary/8 flex items-center justify-center flex-shrink-0 group-hover/topic:bg-primary/12 transition-colors">
+                    <TopicIcon className="w-3.5 h-3.5 text-primary/60 group-hover/topic:text-primary transition-colors" />
+                  </div>
+                  <span className="text-xs text-foreground/70 group-hover/topic:text-foreground transition-colors flex-1 line-clamp-1">
+                    {topic.text}
+                  </span>
+                  <ArrowRight className="w-3 h-3 text-muted-foreground/30 group-hover/topic:text-primary/50 group-hover/topic:translate-x-0.5 transition-all flex-shrink-0" />
+                </motion.button>
+              );
+            })}
           </motion.div>
         </motion.div>
 
