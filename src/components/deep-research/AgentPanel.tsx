@@ -19,6 +19,7 @@ export function AgentPanel({ stage, thoughts }: AgentPanelProps) {
           {stage === 'GENERATING_PLAN' && '正在生成计划...'}
           {stage === 'REVIEWING_PLAN' && '等待确认计划'}
           {stage === 'RESEARCHING' && '深度研究进行中...'}
+          {stage === 'COMPLETED' && '✅ 研究已完成'}
         </p>
       </div>
 

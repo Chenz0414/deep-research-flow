@@ -38,43 +38,24 @@ const Index = () => {
   const stageRef = useRef<Stage>('IDLE');
   const activeIdRef = useRef<string | undefined>();
 
-  const updateStageRef = (s: Stage) => {
-    stageRef.current = s;
-    setStage(s);
-    // Sync stage back to session
-    if (activeIdRef.current) {
-      setSessions(prev => prev.map(sess =>
-        sess.id === activeIdRef.current ? { ...sess, stage: s } : sess
-      ));
-    }
-  };
-
-  // Save current state into the active session
-  const syncSession = useCallback((overrides?: Partial<ResearchSession>) => {
-    if (!activeIdRef.current) return;
-    setSessions(prev => prev.map(sess =>
-      sess.id === activeIdRef.current
-        ? {
-            ...sess,
-            stage: stageRef.current,
-            thoughts: overrides?.thoughts ?? sess.thoughts,
-            messageHistory: overrides?.messageHistory ?? sess.messageHistory,
-            planText: overrides?.planText ?? sess.planText,
-            reportMarkdown: overrides?.reportMarkdown ?? sess.reportMarkdown,
-          }
-        : sess
-    ));
+  const updateSession = useCallback((id: string, updates: Partial<ResearchSession>) => {
+    setSessions(prev => prev.map(s => s.id === id ? { ...s, ...updates } : s));
   }, []);
 
-  const { send } = useSSE({
+  const updateStageRef = useCallback((s: Stage) => {
+    stageRef.current = s;
+    setStage(s);
+    if (activeIdRef.current) {
+      updateSession(activeIdRef.current, { stage: s });
+    }
+  }, [updateSession]);
+
+  const { send, abort } = useSSE({
     onThought: (thought) => {
       setThoughts(prev => {
         const next = [...prev, thought];
-        // sync to session
         if (activeIdRef.current) {
-          setSessions(s => s.map(sess =>
-            sess.id === activeIdRef.current ? { ...sess, thoughts: next } : sess
-          ));
+          updateSession(activeIdRef.current, { thoughts: next });
         }
         return next;
       });
@@ -82,27 +63,33 @@ const Index = () => {
     onContent: (chunk) => {
       if (stageRef.current === 'GENERATING_PLAN') {
         planAccRef.current += chunk;
-        setPlanText(planAccRef.current);
-        if (activeIdRef.current) {
-          const plan = planAccRef.current;
-          setSessions(s => s.map(sess =>
-            sess.id === activeIdRef.current ? { ...sess, planText: plan } : sess
-          ));
-        }
+        const plan = planAccRef.current;
+        setPlanText(plan);
+        if (activeIdRef.current) updateSession(activeIdRef.current, { planText: plan });
       } else if (stageRef.current === 'RESEARCHING') {
         reportAccRef.current += chunk;
-        setReportMarkdown(reportAccRef.current);
-        if (activeIdRef.current) {
-          const report = reportAccRef.current;
-          setSessions(s => s.map(sess =>
-            sess.id === activeIdRef.current ? { ...sess, reportMarkdown: report } : sess
-          ));
-        }
+        const report = reportAccRef.current;
+        setReportMarkdown(report);
+        if (activeIdRef.current) updateSession(activeIdRef.current, { reportMarkdown: report });
       }
     },
     onComplete: () => {
       if (stageRef.current === 'GENERATING_PLAN') {
         updateStageRef('REVIEWING_PLAN');
+      } else if (stageRef.current === 'RESEARCHING') {
+        // Research is done!
+        updateStageRef('COMPLETED');
+        // Add a final "done" thought
+        setThoughts(prev => {
+          const next = [...prev, {
+            id: `done-${Date.now()}`,
+            type: 'writing' as const,
+            content: '研究报告已生成完成',
+            timestamp: Date.now(),
+          }];
+          if (activeIdRef.current) updateSession(activeIdRef.current, { thoughts: next });
+          return next;
+        });
       }
     },
     onError: (err) => {
@@ -113,11 +100,9 @@ const Index = () => {
     },
   });
 
-  // User sends initial query from WelcomeView
   const handleSend = useCallback((message: string) => {
     if (stage !== 'IDLE') return;
 
-    // Create a new session
     const id = generateId();
     const title = message.length > 30 ? message.slice(0, 30) + '...' : message;
     const newHistory: MessageItem[] = [{ role: 'user', content: message }];
@@ -149,7 +134,7 @@ const Index = () => {
       deep_search_step: 3,
       language: 'zh-CN',
     });
-  }, [stage, send]);
+  }, [stage, send, updateStageRef]);
 
   const handleEditPlan = useCallback((newPlan: string) => {
     const newHistory: MessageItem[] = [
@@ -162,7 +147,9 @@ const Index = () => {
     planAccRef.current = '';
     setPlanText('');
     updateStageRef('GENERATING_PLAN');
-    syncSession({ messageHistory: newHistory, thoughts: [] });
+    if (activeIdRef.current) {
+      updateSession(activeIdRef.current, { messageHistory: newHistory, thoughts: [], planText: '' });
+    }
 
     send(toApiMessages(newHistory), {
       chat_id: CHAT_ID,
@@ -171,7 +158,7 @@ const Index = () => {
       is_edit_plan: true,
       language: 'zh-CN',
     });
-  }, [messageHistory, planText, send, syncSession]);
+  }, [messageHistory, planText, send, updateStageRef, updateSession]);
 
   const handleStartResearch = useCallback(() => {
     const newHistory: MessageItem[] = [
@@ -183,7 +170,9 @@ const Index = () => {
     reportAccRef.current = '';
     setReportMarkdown('');
     updateStageRef('RESEARCHING');
-    syncSession({ messageHistory: newHistory, thoughts: [], reportMarkdown: '' });
+    if (activeIdRef.current) {
+      updateSession(activeIdRef.current, { messageHistory: newHistory, thoughts: [], reportMarkdown: '' });
+    }
 
     send(toApiMessages(newHistory), {
       chat_id: CHAT_ID,
@@ -192,12 +181,14 @@ const Index = () => {
       is_edit_plan: false,
       language: 'zh-CN',
     });
-  }, [messageHistory, planText, send, syncSession]);
+  }, [messageHistory, planText, send, updateStageRef, updateSession]);
 
   const handleNewResearch = useCallback(() => {
+    // Don't abort - let background streams continue updating session state
     activeIdRef.current = undefined;
     setActiveSessionId(undefined);
-    updateStageRef('IDLE');
+    stageRef.current = 'IDLE';
+    setStage('IDLE');
     setThoughts([]);
     setMessageHistory([]);
     setPlanText('');
@@ -207,26 +198,28 @@ const Index = () => {
   }, []);
 
   const handleSelectSession = useCallback((id: string) => {
-    const session = sessions.find(s => s.id === id);
-    if (!session) return;
+    setSessions(prev => {
+      const session = prev.find(s => s.id === id);
+      if (!session) return prev;
 
-    activeIdRef.current = id;
-    setActiveSessionId(id);
-    stageRef.current = session.stage;
-    setStage(session.stage);
-    setThoughts(session.thoughts);
-    setMessageHistory(session.messageHistory);
-    setPlanText(session.planText);
-    setReportMarkdown(session.reportMarkdown);
-    planAccRef.current = session.planText;
-    reportAccRef.current = session.reportMarkdown;
-  }, [sessions]);
+      activeIdRef.current = id;
+      setActiveSessionId(id);
+      stageRef.current = session.stage;
+      setStage(session.stage);
+      setThoughts(session.thoughts);
+      setMessageHistory(session.messageHistory);
+      setPlanText(session.planText);
+      setReportMarkdown(session.reportMarkdown);
+      planAccRef.current = session.planText;
+      reportAccRef.current = session.reportMarkdown;
+      return prev;
+    });
+  }, []);
 
   const isActive = stage !== 'IDLE';
 
   return (
     <div className="h-screen w-screen flex overflow-hidden bg-background">
-      {/* Left sidebar - always visible */}
       <div className="flex-shrink-0">
         <AppSidebar
           sessions={sessions}
@@ -238,7 +231,6 @@ const Index = () => {
 
       {isActive ? (
         <>
-          {/* Middle - main content area */}
           <div className="flex-1 min-w-0">
             <RightPanel
               stage={stage}
@@ -248,7 +240,6 @@ const Index = () => {
               onStartResearch={handleStartResearch}
             />
           </div>
-          {/* Right - agent status */}
           <div className="w-[280px] flex-shrink-0">
             <AgentPanel stage={stage} thoughts={thoughts} />
           </div>
