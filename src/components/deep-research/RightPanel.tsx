@@ -2,6 +2,7 @@ import { AnimatePresence } from 'framer-motion';
 import type { Stage } from '@/types/deep-research';
 import { SkeletonView } from './SkeletonView';
 import { ResearchPlanCard } from './ResearchPlanCard';
+import { ResearchLoadingView } from './ResearchLoadingView';
 import { MarkdownViewer } from './MarkdownViewer';
 
 interface RightPanelProps {
@@ -14,6 +15,9 @@ interface RightPanelProps {
 }
 
 export function RightPanel({ stage, planText, reportMarkdown, onEditPlan, onStartResearch, isLoading }: RightPanelProps) {
+  // Show loading view when RESEARCHING but no content yet
+  const showResearchLoading = stage === 'RESEARCHING' && !reportMarkdown;
+
   return (
     <div className="h-full overflow-hidden">
       <AnimatePresence mode="wait">
@@ -29,7 +33,10 @@ export function RightPanel({ stage, planText, reportMarkdown, onEditPlan, onStar
             />
           </div>
         )}
-        {stage === 'RESEARCHING' && (
+        {stage === 'RESEARCHING' && showResearchLoading && (
+          <ResearchLoadingView key="research-loading" />
+        )}
+        {stage === 'RESEARCHING' && !showResearchLoading && (
           <MarkdownViewer
             key="report"
             content={reportMarkdown}

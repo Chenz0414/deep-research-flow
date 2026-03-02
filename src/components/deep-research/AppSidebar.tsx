@@ -2,33 +2,31 @@ import { useState } from 'react';
 import { Plus, Search, FileText, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import type { Stage } from '@/types/deep-research';
-
-interface HistoryItem {
-  id: string;
-  title: string;
-  date: string;
-}
-
-const MOCK_HISTORY: HistoryItem[] = [
-  { id: '1', title: '人工智能在医疗领域的应用', date: '2025-03-01' },
-  { id: '2', title: '新能源汽车市场分析', date: '2025-02-28' },
-  { id: '3', title: '量子计算技术发展趋势', date: '2025-02-25' },
-  { id: '4', title: '全球气候变化影响研究', date: '2025-02-20' },
-];
+import type { ResearchSession } from '@/types/research-session';
 
 interface AppSidebarProps {
-  stage: Stage;
+  sessions: ResearchSession[];
+  activeSessionId?: string;
   onNewResearch: () => void;
-  activeId?: string;
+  onSelectSession: (id: string) => void;
 }
 
-export function AppSidebar({ stage, onNewResearch, activeId }: AppSidebarProps) {
+export function AppSidebar({ sessions, activeSessionId, onNewResearch, onSelectSession }: AppSidebarProps) {
   const [searchQuery, setSearchQuery] = useState('');
 
-  const filtered = MOCK_HISTORY.filter(h =>
-    h.title.toLowerCase().includes(searchQuery.toLowerCase())
+  const filtered = sessions.filter(s =>
+    s.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const stageLabel = (stage: string) => {
+    switch (stage) {
+      case 'IDLE': return '待开始';
+      case 'GENERATING_PLAN': return '生成计划中';
+      case 'REVIEWING_PLAN': return '待确认';
+      case 'RESEARCHING': return '研究中';
+      default: return '';
+    }
+  };
 
   return (
     <div className="h-full flex flex-col bg-surface-elevated border-r w-[240px]">
@@ -70,21 +68,27 @@ export function AppSidebar({ stage, onNewResearch, activeId }: AppSidebarProps) 
           {filtered.length === 0 ? (
             <p className="text-xs text-muted-foreground px-3 py-4 text-center">暂无记录</p>
           ) : (
-            filtered.map((item) => (
+            filtered.map((session) => (
               <button
-                key={item.id}
+                key={session.id}
+                onClick={() => onSelectSession(session.id)}
                 className={`w-full text-left px-3 py-2 rounded-lg text-xs transition-colors group hover:bg-accent ${
-                  activeId === item.id ? 'bg-accent text-accent-foreground' : 'text-foreground/80'
+                  activeSessionId === session.id ? 'bg-accent text-accent-foreground' : 'text-foreground/80'
                 }`}
               >
                 <div className="flex items-start gap-2">
                   <FileText className="w-3.5 h-3.5 mt-0.5 flex-shrink-0 text-muted-foreground group-hover:text-foreground" />
                   <div className="min-w-0 flex-1">
-                    <p className="truncate font-medium">{item.title}</p>
-                    <p className="text-[10px] text-muted-foreground mt-0.5 flex items-center gap-1">
-                      <Clock className="w-2.5 h-2.5" />
-                      {item.date}
-                    </p>
+                    <p className="truncate font-medium">{session.title}</p>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <span className="text-[10px] text-muted-foreground flex items-center gap-1">
+                        <Clock className="w-2.5 h-2.5" />
+                        {session.createdAt}
+                      </span>
+                      <span className="text-[10px] text-primary/70 font-medium">
+                        {stageLabel(session.stage)}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </button>
