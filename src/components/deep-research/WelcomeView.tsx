@@ -5,8 +5,14 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 
 interface WelcomeViewProps {
-  onSend: (message: string) => void;
+  onSend: (message: string, deepSearchStep: number) => void;
 }
+
+const SEARCH_MODES = [
+  { label: '快速模式', step: 1, cost: 10, desc: '基础搜索，快速出结果' },
+  { label: '标准模式', step: 2, cost: 15, desc: '中等搜索，平衡效率与质量' },
+  { label: '深度模式', step: 3, cost: 20, desc: '深度搜索，最全面的结果' },
+] as const;
 
 const FEATURES = [
   { icon: Brain, title: '智能大纲生成', desc: 'AI 自动分析主题，生成结构化研究计划' },
@@ -36,6 +42,7 @@ const FAQS = [
 
 export function WelcomeView({ onSend }: WelcomeViewProps) {
   const [input, setInput] = useState('');
+  const [selectedStep, setSelectedStep] = useState(2);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
@@ -46,7 +53,7 @@ export function WelcomeView({ onSend }: WelcomeViewProps) {
   const handleSubmit = () => {
     const trimmed = input.trim();
     if (!trimmed) return;
-    onSend(trimmed);
+    onSend(trimmed, selectedStep);
     setInput('');
   };
 
@@ -112,6 +119,38 @@ export function WelcomeView({ onSend }: WelcomeViewProps) {
             ))}
           </div>
 
+          {/* Mode selector */}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5, duration: 0.5 }}
+            className="flex items-center justify-center gap-2"
+          >
+            {SEARCH_MODES.map((mode) => (
+              <button
+                key={mode.step}
+                onClick={() => setSelectedStep(mode.step)}
+                className={`relative px-4 py-2.5 rounded-lg text-xs font-medium transition-all duration-200 border ${
+                  selectedStep === mode.step
+                    ? 'bg-primary/10 border-primary/30 text-primary shadow-sm'
+                    : 'bg-card/60 border-border/50 text-muted-foreground hover:border-primary/20 hover:text-foreground'
+                }`}
+              >
+                <span className="block">{mode.label}</span>
+                <span className={`block text-[10px] mt-0.5 ${selectedStep === mode.step ? 'text-primary/70' : 'text-muted-foreground/60'}`}>
+                  消耗 {mode.cost} 配额
+                </span>
+                {selectedStep === mode.step && (
+                  <motion.div
+                    layoutId="mode-indicator"
+                    className="absolute inset-0 rounded-lg border-2 border-primary/30"
+                    transition={{ type: 'spring', bounce: 0.2, duration: 0.4 }}
+                  />
+                )}
+              </button>
+            ))}
+          </motion.div>
+
           {/* Input */}
           <motion.div
             initial={{ opacity: 0, y: 12 }}
@@ -139,6 +178,9 @@ export function WelcomeView({ onSend }: WelcomeViewProps) {
                 <Send className="w-4 h-4" />
               </Button>
             </div>
+            <p className="text-[11px] text-muted-foreground/50 text-center mt-2">
+              当前：{SEARCH_MODES.find(m => m.step === selectedStep)?.desc}
+            </p>
           </motion.div>
         </motion.div>
 

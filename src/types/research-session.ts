@@ -9,4 +9,5 @@ export interface ResearchSession {
   messageHistory: MessageItem[];
   planText: string;
   reportMarkdown: string;
+  deepSearchStep: number;
 }
