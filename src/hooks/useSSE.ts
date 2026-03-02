@@ -1,7 +1,11 @@
 import { useCallback, useRef } from 'react';
-import type { ThoughtItem, MessageItem } from '@/types/deep-research';
+import type { ThoughtItem, ApiMessage } from '@/types/deep-research';
 
 const API_URL = 'https://apiv2.wahezu.cn/ai/deep_search/chat';
+
+function generateKey(): string {
+  return `${crypto.randomUUID()}-1`;
+}
 
 interface UseSSEOptions {
   onThought: (thought: ThoughtItem) => void;
@@ -10,25 +14,41 @@ interface UseSSEOptions {
   onError: (error: string) => void;
 }
 
+interface SendParams {
+  chat_id: number;
+  model: string;
+  is_deep_search: boolean;
+  is_edit_plan: boolean;
+  deep_search_step?: number;
+  report_style?: number;
+  language?: string;
+}
+
 export function useSSE({ onThought, onContent, onComplete, onError }: UseSSEOptions) {
   const abortRef = useRef<AbortController | null>(null);
 
   const send = useCallback(async (
-    messages: MessageItem[],
-    params: { is_deep_search: boolean; is_edit_plan: boolean; deep_search_step?: number }
+    messages: ApiMessage[],
+    params: SendParams
   ) => {
     abortRef.current?.abort();
     const controller = new AbortController();
     abortRef.current = controller;
 
     try {
+      const body = {
+        ...params,
+        messages,
+        key: generateKey(),
+      };
+
       const res = await fetch(API_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Token': 'e9QyzZfgMk43Re2tsgwGzFWFHGv3P94g',
         },
-        body: JSON.stringify({ messages, ...params }),
+        body: JSON.stringify(body),
         signal: controller.signal,
       });
 
@@ -40,8 +60,8 @@ export function useSSE({ onThought, onContent, onComplete, onError }: UseSSEOpti
       const contentType = res.headers.get('content-type') || '';
       if (contentType.includes('application/json') && !contentType.includes('stream')) {
         const json = await res.json();
-        if (json.code && json.code !== 200) {
-          throw new Error(json.error || json.message || `API Error ${json.code}`);
+        if (json.code && json.code !== 200 && json.code !== 0) {
+          throw new Error(json.message || json.error || `API Error ${json.code}`);
         }
       }
 
@@ -69,17 +89,24 @@ export function useSSE({ onThought, onContent, onComplete, onError }: UseSSEOpti
 
             try {
               const data = JSON.parse(dataStr);
+
+              // Handle error events
+              if (currentEvent === 'error') {
+                onError(data.message || data.error || 'Unknown error');
+                return;
+              }
+
               const thoughtTypes = ['thinking', 'searching', 'search_result', 'planning', 'writing'];
 
               if (thoughtTypes.includes(currentEvent)) {
                 onThought({
                   id: `${currentEvent}-${Date.now()}-${Math.random()}`,
                   type: currentEvent as ThoughtItem['type'],
-                  content: data.content || data.query || data.result || JSON.stringify(data),
+                  content: data.text || data.content || data.query || data.result || data.status || JSON.stringify(data),
                   timestamp: Date.now(),
                 });
               } else if (currentEvent === 'content') {
-                onContent(data.content || '');
+                onContent(data.text || data.content || '');
               } else if (currentEvent === 'user_message') {
                 onComplete(data.message_id);
               }

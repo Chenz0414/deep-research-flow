@@ -3,7 +3,18 @@ import { useToast } from '@/hooks/use-toast';
 import { useSSE } from '@/hooks/useSSE';
 import { LeftSidebar } from '@/components/deep-research/LeftSidebar';
 import { RightPanel } from '@/components/deep-research/RightPanel';
-import type { Stage, ThoughtItem, MessageItem } from '@/types/deep-research';
+import type { Stage, ThoughtItem, MessageItem, ApiMessage } from '@/types/deep-research';
+
+/** Convert internal message history to API format */
+function toApiMessages(messages: MessageItem[]): ApiMessage[] {
+  // API only expects user messages in the messages array
+  return messages
+    .filter(m => m.role === 'user')
+    .map(m => ({ text: m.content }));
+}
+
+const CHAT_ID = 0; // Will need a real chat_id from your backend
+const MODEL = 'GPT-4.1';
 
 const Index = () => {
   const [stage, setStage] = useState<Stage>('IDLE');
@@ -40,7 +51,6 @@ const Index = () => {
       if (stageRef.current === 'GENERATING_PLAN') {
         updateStageRef('REVIEWING_PLAN');
       }
-      // RESEARCHING stays in RESEARCHING (report done, user reads)
     },
     onError: (err) => {
       toast({
@@ -67,10 +77,13 @@ const Index = () => {
       setPlanText('');
       updateStageRef('GENERATING_PLAN');
 
-      send(newHistory, {
+      send(toApiMessages(newHistory), {
+        chat_id: CHAT_ID,
+        model: MODEL,
         is_deep_search: false,
         is_edit_plan: false,
         deep_search_step: 3,
+        language: 'zh-CN',
       });
     }
   }, [stage, messageHistory, send]);
@@ -88,9 +101,12 @@ const Index = () => {
     setPlanText('');
     updateStageRef('GENERATING_PLAN');
 
-    send(newHistory, {
+    send(toApiMessages(newHistory), {
+      chat_id: CHAT_ID,
+      model: MODEL,
       is_deep_search: false,
       is_edit_plan: true,
+      language: 'zh-CN',
     });
   }, [messageHistory, planText, send]);
 
@@ -106,9 +122,12 @@ const Index = () => {
     setReportMarkdown('');
     updateStageRef('RESEARCHING');
 
-    send(newHistory, {
+    send(toApiMessages(newHistory), {
+      chat_id: CHAT_ID,
+      model: MODEL,
       is_deep_search: true,
       is_edit_plan: false,
+      language: 'zh-CN',
     });
   }, [messageHistory, planText, send]);
 
