@@ -125,30 +125,31 @@ export function ResearchPlanCard({ planText, statusText, onEdit, onStart, isLoad
       </motion.div>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>修改研究计划</DialogTitle>
             <DialogDescription>
               输入您的新需求，AI 将根据您的要求重新生成研究计划。
             </DialogDescription>
           </DialogHeader>
-          <div className="flex items-center gap-2 mt-2">
-            <Input
+          <div className="flex flex-col gap-3 mt-2">
+            <textarea
               value={requirement}
               onChange={(e) => setRequirement(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="描述您的新需求..."
-              className="flex-1 text-sm"
+              className="flex min-h-[120px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 resize-none"
               autoFocus
             />
-            <Button
-              size="icon"
-              onClick={handleSubmitRequirement}
-              disabled={!requirement.trim()}
-              className="flex-shrink-0"
-            >
-              <Send className="w-4 h-4" />
-            </Button>
+            <div className="flex justify-end">
+              <Button
+                onClick={handleSubmitRequirement}
+                disabled={!requirement.trim()}
+              >
+                <Send className="w-4 h-4 mr-1.5" />
+                提交修改
+              </Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
