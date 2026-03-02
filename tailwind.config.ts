@@ -57,6 +57,13 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        timeline: {
+          line: "hsl(var(--timeline-line))",
+          "dot-active": "hsl(var(--timeline-dot-active))",
+          "dot-done": "hsl(var(--timeline-dot-done))",
+          "dot-idle": "hsl(var(--timeline-dot-idle))",
+        },
+        "surface-elevated": "hsl(var(--surface-elevated))",
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -65,27 +72,59 @@ export default {
       },
       keyframes: {
         "accordion-down": {
-          from: {
-            height: "0",
-          },
-          to: {
-            height: "var(--radix-accordion-content-height)",
-          },
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
         },
         "accordion-up": {
-          from: {
-            height: "var(--radix-accordion-content-height)",
-          },
-          to: {
-            height: "0",
-          },
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
+        },
+        "fade-in": {
+          "0%": { opacity: "0", transform: "translateY(8px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        "fade-in-scale": {
+          "0%": { opacity: "0", transform: "scale(0.96)" },
+          "100%": { opacity: "1", transform: "scale(1)" },
+        },
+        "pulse-dot": {
+          "0%, 100%": { opacity: "1", transform: "scale(1)" },
+          "50%": { opacity: "0.5", transform: "scale(1.2)" },
+        },
+        "spin-slow": {
+          "0%": { transform: "rotate(0deg)" },
+          "100%": { transform: "rotate(360deg)" },
+        },
+        "blink-cursor": {
+          "0%, 100%": { opacity: "1" },
+          "50%": { opacity: "0" },
         },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "fade-in": "fade-in 0.4s ease-out forwards",
+        "fade-in-scale": "fade-in-scale 0.3s ease-out forwards",
+        "pulse-dot": "pulse-dot 1.5s ease-in-out infinite",
+        "spin-slow": "spin-slow 1.5s linear infinite",
+        "blink-cursor": "blink-cursor 1s step-end infinite",
+      },
+      typography: {
+        DEFAULT: {
+          css: {
+            maxWidth: 'none',
+            color: 'hsl(var(--foreground))',
+            a: { color: 'hsl(var(--primary))' },
+            strong: { color: 'hsl(var(--foreground))' },
+            'h1, h2, h3, h4': { color: 'hsl(var(--foreground))' },
+            code: { color: 'hsl(var(--primary))' },
+            blockquote: { borderLeftColor: 'hsl(var(--primary))' },
+            hr: { borderColor: 'hsl(var(--border))' },
+            'thead th': { color: 'hsl(var(--foreground))' },
+          },
+        },
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography")],
 } satisfies Config;
