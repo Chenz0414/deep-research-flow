@@ -1,21 +1,20 @@
-import { useCallback, useRef } from 'react';
 import type { ThoughtItem, ApiMessage } from '@/types/deep-research';
 
 const API_URL = 'https://apiv2.wahezu.cn/ai/deep_search/chat';
-const USE_MOCK = true; // 切换为 false 使用真实 API
+const USE_MOCK = true;
 
 function generateKey(): string {
   return `${crypto.randomUUID()}-1`;
 }
 
-interface UseSSEOptions {
+export interface SSECallbacks {
   onThought: (thought: ThoughtItem) => void;
   onContent: (chunk: string) => void;
   onComplete: (messageId?: string) => void;
   onError: (error: string) => void;
 }
 
-interface SendParams {
+export interface SendParams {
   chat_id: number;
   model: string;
   is_deep_search: boolean;
@@ -25,7 +24,7 @@ interface SendParams {
   language?: string;
 }
 
-// ---- Mock SSE Data ----
+// ---- Mock Data ----
 
 const MOCK_PLAN_EVENTS = [
   { event: 'thinking', data: { status: 'analyzing' }, delay: 400 },
@@ -34,7 +33,6 @@ const MOCK_PLAN_EVENTS = [
   { event: 'searching', data: { query: '相关领域文献综述', step: 2 }, delay: 700 },
   { event: 'search_result', data: { result: '找到 12 篇相关文献和 5 个权威数据源' }, delay: 500 },
   { event: 'planning', data: { status: '正在生成研究计划...' }, delay: 600 },
-  // Content chunks for plan
   { event: 'content', data: { text: '## 研究调研计划\n\n' }, delay: 100 },
   { event: 'content', data: { text: '### 1. 背景与现状分析\n' }, delay: 80 },
   { event: 'content', data: { text: '深入调研该领域的发展历程、当前市场规模和主要参与者，' }, delay: 60 },
@@ -64,7 +62,6 @@ const MOCK_RESEARCH_EVENTS = [
   { event: 'searching', data: { query: '行业案例数据', step: 3 }, delay: 600 },
   { event: 'search_result', data: { result: '找到 5 个深度案例' }, delay: 300 },
   { event: 'writing', data: { status: '整合分析结果...' }, delay: 400 },
-  // Report content
   { event: 'content', data: { text: '# 深度研究报告\n\n' }, delay: 120 },
   { event: 'content', data: { text: '## 摘要\n\n' }, delay: 80 },
   { event: 'content', data: { text: '本报告基于对多个权威数据源的系统分析，' }, delay: 50 },
@@ -125,11 +122,22 @@ const MOCK_EDIT_PLAN_EVENTS = [
   { event: 'user_message', data: { message_id: 'mock-edit-001', file_size_bytes: 1024 }, delay: 200 },
 ];
 
+// ---- Core stream runner ----
+
+function parseThought(event: string, data: any): ThoughtItem | null {
+  const thoughtTypes = ['thinking', 'searching', 'search_result', 'planning', 'writing'];
+  if (!thoughtTypes.includes(event)) return null;
+  return {
+    id: `${event}-${Date.now()}-${Math.random()}`,
+    type: event as ThoughtItem['type'],
+    content: data.text || data.content || data.query || data.result || data.status || JSON.stringify(data),
+    timestamp: Date.now(),
+  };
+}
+
 async function runMockSSE(
   events: typeof MOCK_PLAN_EVENTS,
-  onThought: UseSSEOptions['onThought'],
-  onContent: UseSSEOptions['onContent'],
-  onComplete: UseSSEOptions['onComplete'],
+  cb: SSECallbacks,
   signal: AbortSignal,
 ) {
   for (const evt of events) {
@@ -137,145 +145,116 @@ async function runMockSSE(
     await new Promise(r => setTimeout(r, evt.delay));
     if (signal.aborted) return;
 
-    const thoughtTypes = ['thinking', 'searching', 'search_result', 'planning', 'writing'];
-    if (thoughtTypes.includes(evt.event)) {
-      onThought({
-        id: `${evt.event}-${Date.now()}-${Math.random()}`,
-        type: evt.event as ThoughtItem['type'],
-        content: (evt.data as any).text || (evt.data as any).query || (evt.data as any).result || (evt.data as any).status || '',
-        timestamp: Date.now(),
-      });
+    const thought = parseThought(evt.event, evt.data);
+    if (thought) {
+      cb.onThought(thought);
     } else if (evt.event === 'content') {
-      onContent((evt.data as any).text || '');
+      cb.onContent((evt.data as any).text || '');
     } else if (evt.event === 'user_message') {
-      onComplete((evt.data as any).message_id);
+      cb.onComplete((evt.data as any).message_id);
     }
   }
 }
 
-// ---- Hook ----
+async function runRealSSE(
+  messages: ApiMessage[],
+  params: SendParams,
+  cb: SSECallbacks,
+  signal: AbortSignal,
+) {
+  const body = { ...params, messages, key: generateKey() };
 
-export function useSSE({ onThought, onContent, onComplete, onError }: UseSSEOptions) {
-  const abortRef = useRef<AbortController | null>(null);
+  const res = await fetch(API_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Token': 'e9QyzZfgMk43Re2tsgwGzFWFHGv3P94g',
+    },
+    body: JSON.stringify(body),
+    signal,
+  });
 
-  const send = useCallback(async (
-    messages: ApiMessage[],
-    params: SendParams
-  ) => {
-    abortRef.current?.abort();
-    const controller = new AbortController();
-    abortRef.current = controller;
+  if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
 
-    if (USE_MOCK) {
-      try {
-        let events = MOCK_PLAN_EVENTS;
-        if (params.is_deep_search) {
-          events = MOCK_RESEARCH_EVENTS;
-        } else if (params.is_edit_plan) {
-          events = MOCK_EDIT_PLAN_EVENTS;
-        }
-        await runMockSSE(events, onThought, onContent, onComplete, controller.signal);
-      } catch (err: any) {
-        if (err.name !== 'AbortError') {
-          onError(err.message || 'Mock failed');
-        }
-      }
-      return;
+  const contentType = res.headers.get('content-type') || '';
+  if (contentType.includes('application/json') && !contentType.includes('stream')) {
+    const json = await res.json();
+    if (json.code && json.code !== 200 && json.code !== 0) {
+      throw new Error(json.message || json.error || `API Error ${json.code}`);
     }
+  }
 
-    // Real API logic
-    try {
-      const body = {
-        ...params,
-        messages,
-        key: generateKey(),
-      };
+  const reader = res.body?.getReader();
+  if (!reader) throw new Error('No readable stream');
 
-      const res = await fetch(API_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Token': 'e9QyzZfgMk43Re2tsgwGzFWFHGv3P94g',
-        },
-        body: JSON.stringify(body),
-        signal: controller.signal,
-      });
+  const decoder = new TextDecoder();
+  let buffer = '';
 
-      if (!res.ok) {
-        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
-      }
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
 
-      const contentType = res.headers.get('content-type') || '';
-      if (contentType.includes('application/json') && !contentType.includes('stream')) {
-        const json = await res.json();
-        if (json.code && json.code !== 200 && json.code !== 0) {
-          throw new Error(json.message || json.error || `API Error ${json.code}`);
-        }
-      }
+    buffer += decoder.decode(value, { stream: true });
+    const lines = buffer.split('\n');
+    buffer = lines.pop() || '';
 
-      const reader = res.body?.getReader();
-      if (!reader) throw new Error('No readable stream');
-
-      const decoder = new TextDecoder();
-      let buffer = '';
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split('\n');
-        buffer = lines.pop() || '';
-
-        let currentEvent = '';
-        for (const line of lines) {
-          if (line.startsWith('event:')) {
-            currentEvent = line.slice(6).trim();
-          } else if (line.startsWith('data:')) {
-            const dataStr = line.slice(5).trim();
-            if (!dataStr) continue;
-
-            try {
-              const data = JSON.parse(dataStr);
-
-              if (currentEvent === 'error') {
-                onError(data.message || data.error || 'Unknown error');
-                return;
-              }
-
-              const thoughtTypes = ['thinking', 'searching', 'search_result', 'planning', 'writing'];
-
-              if (thoughtTypes.includes(currentEvent)) {
-                onThought({
-                  id: `${currentEvent}-${Date.now()}-${Math.random()}`,
-                  type: currentEvent as ThoughtItem['type'],
-                  content: data.text || data.content || data.query || data.result || data.status || JSON.stringify(data),
-                  timestamp: Date.now(),
-                });
-              } else if (currentEvent === 'content') {
-                onContent(data.text || data.content || '');
-              } else if (currentEvent === 'user_message') {
-                onComplete(data.message_id);
-              }
-            } catch {
-              // non-JSON data line, skip
-            }
-            currentEvent = '';
+    let currentEvent = '';
+    for (const line of lines) {
+      if (line.startsWith('event:')) {
+        currentEvent = line.slice(6).trim();
+      } else if (line.startsWith('data:')) {
+        const dataStr = line.slice(5).trim();
+        if (!dataStr) continue;
+        try {
+          const data = JSON.parse(dataStr);
+          if (currentEvent === 'error') {
+            cb.onError(data.message || data.error || 'Unknown error');
+            return;
           }
-        }
+          const thought = parseThought(currentEvent, data);
+          if (thought) {
+            cb.onThought(thought);
+          } else if (currentEvent === 'content') {
+            cb.onContent(data.text || data.content || '');
+          } else if (currentEvent === 'user_message') {
+            cb.onComplete(data.message_id);
+          }
+        } catch { /* skip */ }
+        currentEvent = '';
       }
+    }
+  }
+  cb.onComplete();
+}
 
-      onComplete();
+// ---- Public API: startStream ----
+// Each call is independent. Returns an abort function.
+
+export function startStream(
+  messages: ApiMessage[],
+  params: SendParams,
+  callbacks: SSECallbacks,
+): () => void {
+  const controller = new AbortController();
+
+  const run = async () => {
+    try {
+      if (USE_MOCK) {
+        let events = MOCK_PLAN_EVENTS;
+        if (params.is_deep_search) events = MOCK_RESEARCH_EVENTS;
+        else if (params.is_edit_plan) events = MOCK_EDIT_PLAN_EVENTS;
+        await runMockSSE(events, callbacks, controller.signal);
+      } else {
+        await runRealSSE(messages, params, callbacks, controller.signal);
+      }
     } catch (err: any) {
       if (err.name !== 'AbortError') {
-        onError(err.message || 'Stream failed');
+        callbacks.onError(err.message || 'Stream failed');
       }
     }
-  }, [onThought, onContent, onComplete, onError]);
+  };
 
-  const abort = useCallback(() => {
-    abortRef.current?.abort();
-  }, []);
+  run();
 
-  return { send, abort };
+  return () => controller.abort();
 }

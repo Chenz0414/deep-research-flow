@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { useSSE } from '@/hooks/useSSE';
+import { startStream } from '@/hooks/useSSE';
 import { AppSidebar } from '@/components/deep-research/AppSidebar';
 import { WelcomeView } from '@/components/deep-research/WelcomeView';
 import { RightPanel } from '@/components/deep-research/RightPanel';
@@ -12,104 +12,106 @@ function toApiMessages(messages: MessageItem[]): ApiMessage[] {
   return messages.filter(m => m.role === 'user').map(m => ({ text: m.content }));
 }
 
-function generateId(): string {
-  return crypto.randomUUID();
-}
-
-function todayStr(): string {
-  return new Date().toISOString().slice(0, 10);
-}
-
 const CHAT_ID = 0;
 const MODEL = 'GPT-4.1';
 
 const Index = () => {
   const [sessions, setSessions] = useState<ResearchSession[]>([]);
   const [activeSessionId, setActiveSessionId] = useState<string | undefined>();
-  const [stage, setStage] = useState<Stage>('IDLE');
-  const [thoughts, setThoughts] = useState<ThoughtItem[]>([]);
-  const [messageHistory, setMessageHistory] = useState<MessageItem[]>([]);
-  const [planText, setPlanText] = useState('');
-  const [reportMarkdown, setReportMarkdown] = useState('');
   const { toast } = useToast();
 
-  const planAccRef = useRef('');
-  const reportAccRef = useRef('');
-  const stageRef = useRef<Stage>('IDLE');
-  const activeIdRef = useRef<string | undefined>();
+  // Per-session abort controllers and content accumulators
+  const abortsRef = useRef<Map<string, () => void>>(new Map());
+  const planAccs = useRef<Map<string, string>>(new Map());
+  const reportAccs = useRef<Map<string, string>>(new Map());
 
-  const updateSession = useCallback((id: string, updates: Partial<ResearchSession>) => {
-    setSessions(prev => prev.map(s => s.id === id ? { ...s, ...updates } : s));
+  // Helper: update a specific session in the array
+  const updateSession = useCallback((id: string, updater: (s: ResearchSession) => ResearchSession) => {
+    setSessions(prev => prev.map(s => s.id === id ? updater(s) : s));
   }, []);
 
-  const updateStageRef = useCallback((s: Stage) => {
-    stageRef.current = s;
-    setStage(s);
-    if (activeIdRef.current) {
-      updateSession(activeIdRef.current, { stage: s });
-    }
-  }, [updateSession]);
+  // Get current active session from state
+  const getActiveSession = useCallback((): ResearchSession | undefined => {
+    // We read from sessions via the setter to get latest
+    let found: ResearchSession | undefined;
+    setSessions(prev => {
+      found = prev.find(s => s.id === activeSessionId);
+      return prev; // no mutation
+    });
+    return found;
+  }, [activeSessionId]);
 
-  const { send, abort } = useSSE({
-    onThought: (thought) => {
-      setThoughts(prev => {
-        const next = [...prev, thought];
-        if (activeIdRef.current) {
-          updateSession(activeIdRef.current, { thoughts: next });
+  /**
+   * Start an SSE stream for a specific session.
+   * All callbacks are bound to the sessionId via closure — completely independent of activeSessionId.
+   */
+  const startSessionStream = useCallback((
+    sessionId: string,
+    messages: ApiMessage[],
+    params: Parameters<typeof startStream>[1],
+    streamPhase: 'plan' | 'research',
+  ) => {
+    // Abort any existing stream for this session
+    abortsRef.current.get(sessionId)?.();
+
+    const abort = startStream(messages, params, {
+      onThought: (thought) => {
+        updateSession(sessionId, s => ({
+          ...s,
+          thoughts: [...s.thoughts, thought],
+        }));
+      },
+      onContent: (chunk) => {
+        if (streamPhase === 'plan') {
+          const acc = (planAccs.current.get(sessionId) || '') + chunk;
+          planAccs.current.set(sessionId, acc);
+          updateSession(sessionId, s => ({ ...s, planText: acc }));
+        } else {
+          const acc = (reportAccs.current.get(sessionId) || '') + chunk;
+          reportAccs.current.set(sessionId, acc);
+          updateSession(sessionId, s => ({ ...s, reportMarkdown: acc }));
         }
-        return next;
-      });
-    },
-    onContent: (chunk) => {
-      if (stageRef.current === 'GENERATING_PLAN') {
-        planAccRef.current += chunk;
-        const plan = planAccRef.current;
-        setPlanText(plan);
-        if (activeIdRef.current) updateSession(activeIdRef.current, { planText: plan });
-      } else if (stageRef.current === 'RESEARCHING') {
-        reportAccRef.current += chunk;
-        const report = reportAccRef.current;
-        setReportMarkdown(report);
-        if (activeIdRef.current) updateSession(activeIdRef.current, { reportMarkdown: report });
-      }
-    },
-    onComplete: () => {
-      if (stageRef.current === 'GENERATING_PLAN') {
-        updateStageRef('REVIEWING_PLAN');
-      } else if (stageRef.current === 'RESEARCHING') {
-        // Research is done!
-        updateStageRef('COMPLETED');
-        // Add a final "done" thought
-        setThoughts(prev => {
-          const next = [...prev, {
-            id: `done-${Date.now()}`,
-            type: 'writing' as const,
-            content: '研究报告已生成完成',
-            timestamp: Date.now(),
-          }];
-          if (activeIdRef.current) updateSession(activeIdRef.current, { thoughts: next });
-          return next;
-        });
-      }
-    },
-    onError: (err) => {
-      toast({ title: '请求失败', description: err, variant: 'destructive' });
-      if (stageRef.current === 'GENERATING_PLAN') {
-        updateStageRef('IDLE');
-      }
-    },
-  });
+      },
+      onComplete: () => {
+        abortsRef.current.delete(sessionId);
+        if (streamPhase === 'plan') {
+          updateSession(sessionId, s => ({ ...s, stage: 'REVIEWING_PLAN' }));
+        } else {
+          updateSession(sessionId, s => ({
+            ...s,
+            stage: 'COMPLETED',
+            thoughts: [...s.thoughts, {
+              id: `done-${Date.now()}`,
+              type: 'writing' as const,
+              content: '研究报告已生成完成',
+              timestamp: Date.now(),
+            }],
+          }));
+        }
+      },
+      onError: (err) => {
+        abortsRef.current.delete(sessionId);
+        toast({ title: '请求失败', description: err, variant: 'destructive' });
+        if (streamPhase === 'plan') {
+          updateSession(sessionId, s => ({ ...s, stage: 'IDLE' }));
+        }
+      },
+    });
+
+    abortsRef.current.set(sessionId, abort);
+  }, [updateSession, toast]);
+
+  // ---- User actions ----
 
   const handleSend = useCallback((message: string) => {
-    if (stage !== 'IDLE') return;
-
-    const id = generateId();
+    const id = crypto.randomUUID();
     const title = message.length > 30 ? message.slice(0, 30) + '...' : message;
     const newHistory: MessageItem[] = [{ role: 'user', content: message }];
+
     const newSession: ResearchSession = {
       id,
       title,
-      createdAt: todayStr(),
+      createdAt: new Date().toISOString().slice(0, 10),
       stage: 'GENERATING_PLAN',
       thoughts: [],
       messageHistory: newHistory,
@@ -119,104 +121,112 @@ const Index = () => {
 
     setSessions(prev => [newSession, ...prev]);
     setActiveSessionId(id);
-    activeIdRef.current = id;
-    setMessageHistory(newHistory);
-    setThoughts([]);
-    planAccRef.current = '';
-    setPlanText('');
-    updateStageRef('GENERATING_PLAN');
+    planAccs.current.set(id, '');
 
-    send(toApiMessages(newHistory), {
+    startSessionStream(id, toApiMessages(newHistory), {
       chat_id: CHAT_ID,
       model: MODEL,
       is_deep_search: false,
       is_edit_plan: false,
       deep_search_step: 3,
       language: 'zh-CN',
-    });
-  }, [stage, send, updateStageRef]);
+    }, 'plan');
+  }, [startSessionStream]);
 
-  const handleEditPlan = useCallback((newPlan: string) => {
-    const newHistory: MessageItem[] = [
-      ...messageHistory,
-      { role: 'assistant', content: planText },
-      { role: 'user', content: newPlan },
-    ];
-    setMessageHistory(newHistory);
-    setThoughts([]);
-    planAccRef.current = '';
-    setPlanText('');
-    updateStageRef('GENERATING_PLAN');
-    if (activeIdRef.current) {
-      updateSession(activeIdRef.current, { messageHistory: newHistory, thoughts: [], planText: '' });
-    }
+  const handleEditPlan = useCallback(() => {
+    setSessions(prev => {
+      const session = prev.find(s => s.id === activeSessionId);
+      if (!session || session.stage !== 'REVIEWING_PLAN') return prev;
 
-    send(toApiMessages(newHistory), {
-      chat_id: CHAT_ID,
-      model: MODEL,
-      is_deep_search: false,
-      is_edit_plan: true,
-      language: 'zh-CN',
+      // We need the session data to construct the edit — read it here
+      const editText = session.planText; // User edits are handled in ResearchPlanCard
+      return prev; // actual edit is triggered below
     });
-  }, [messageHistory, planText, send, updateStageRef, updateSession]);
+  }, [activeSessionId]);
+
+  // This is called from ResearchPlanCard with the new plan text
+  const handleEditPlanWithText = useCallback((newPlan: string) => {
+    if (!activeSessionId) return;
+
+    setSessions(prev => {
+      const session = prev.find(s => s.id === activeSessionId);
+      if (!session) return prev;
+
+      const newHistory: MessageItem[] = [
+        ...session.messageHistory,
+        { role: 'assistant', content: session.planText },
+        { role: 'user', content: newPlan },
+      ];
+
+      planAccs.current.set(activeSessionId, '');
+
+      // Start stream outside setState
+      setTimeout(() => {
+        startSessionStream(activeSessionId, toApiMessages(newHistory), {
+          chat_id: CHAT_ID,
+          model: MODEL,
+          is_deep_search: false,
+          is_edit_plan: true,
+          language: 'zh-CN',
+        }, 'plan');
+      }, 0);
+
+      return prev.map(s => s.id === activeSessionId ? {
+        ...s,
+        stage: 'GENERATING_PLAN' as const,
+        messageHistory: newHistory,
+        thoughts: [],
+        planText: '',
+      } : s);
+    });
+  }, [activeSessionId, startSessionStream]);
 
   const handleStartResearch = useCallback(() => {
-    const newHistory: MessageItem[] = [
-      ...messageHistory,
-      { role: 'assistant', content: planText },
-    ];
-    setMessageHistory(newHistory);
-    setThoughts([]);
-    reportAccRef.current = '';
-    setReportMarkdown('');
-    updateStageRef('RESEARCHING');
-    if (activeIdRef.current) {
-      updateSession(activeIdRef.current, { messageHistory: newHistory, thoughts: [], reportMarkdown: '' });
-    }
+    if (!activeSessionId) return;
 
-    send(toApiMessages(newHistory), {
-      chat_id: CHAT_ID,
-      model: MODEL,
-      is_deep_search: true,
-      is_edit_plan: false,
-      language: 'zh-CN',
+    setSessions(prev => {
+      const session = prev.find(s => s.id === activeSessionId);
+      if (!session) return prev;
+
+      const newHistory: MessageItem[] = [
+        ...session.messageHistory,
+        { role: 'assistant', content: session.planText },
+      ];
+
+      reportAccs.current.set(activeSessionId, '');
+
+      setTimeout(() => {
+        startSessionStream(activeSessionId, toApiMessages(newHistory), {
+          chat_id: CHAT_ID,
+          model: MODEL,
+          is_deep_search: true,
+          is_edit_plan: false,
+          language: 'zh-CN',
+        }, 'research');
+      }, 0);
+
+      return prev.map(s => s.id === activeSessionId ? {
+        ...s,
+        stage: 'RESEARCHING' as const,
+        messageHistory: newHistory,
+        thoughts: [],
+        reportMarkdown: '',
+      } : s);
     });
-  }, [messageHistory, planText, send, updateStageRef, updateSession]);
+  }, [activeSessionId, startSessionStream]);
 
   const handleNewResearch = useCallback(() => {
-    // Don't abort - let background streams continue updating session state
-    activeIdRef.current = undefined;
     setActiveSessionId(undefined);
-    stageRef.current = 'IDLE';
-    setStage('IDLE');
-    setThoughts([]);
-    setMessageHistory([]);
-    setPlanText('');
-    setReportMarkdown('');
-    planAccRef.current = '';
-    reportAccRef.current = '';
   }, []);
 
   const handleSelectSession = useCallback((id: string) => {
-    setSessions(prev => {
-      const session = prev.find(s => s.id === id);
-      if (!session) return prev;
-
-      activeIdRef.current = id;
-      setActiveSessionId(id);
-      stageRef.current = session.stage;
-      setStage(session.stage);
-      setThoughts(session.thoughts);
-      setMessageHistory(session.messageHistory);
-      setPlanText(session.planText);
-      setReportMarkdown(session.reportMarkdown);
-      planAccRef.current = session.planText;
-      reportAccRef.current = session.reportMarkdown;
-      return prev;
-    });
+    setActiveSessionId(id);
   }, []);
 
-  const isActive = stage !== 'IDLE';
+  // Derive active session view from sessions array
+  const activeSession = sessions.find(s => s.id === activeSessionId);
+  const stage: Stage = activeSession?.stage ?? 'IDLE';
+  const isActive = stage !== 'IDLE' && !!activeSession;
 
   return (
     <div className="h-screen w-screen flex overflow-hidden bg-background">
@@ -229,19 +239,19 @@ const Index = () => {
         />
       </div>
 
-      {isActive ? (
+      {isActive && activeSession ? (
         <>
           <div className="flex-1 min-w-0">
             <RightPanel
-              stage={stage}
-              planText={planText}
-              reportMarkdown={reportMarkdown}
-              onEditPlan={handleEditPlan}
+              stage={activeSession.stage}
+              planText={activeSession.planText}
+              reportMarkdown={activeSession.reportMarkdown}
+              onEditPlan={handleEditPlanWithText}
               onStartResearch={handleStartResearch}
             />
           </div>
           <div className="w-[280px] flex-shrink-0">
-            <AgentPanel stage={stage} thoughts={thoughts} />
+            <AgentPanel stage={activeSession.stage} thoughts={activeSession.thoughts} />
           </div>
         </>
       ) : (
