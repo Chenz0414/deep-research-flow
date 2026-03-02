@@ -21,7 +21,7 @@ export function RightPanel({ stage, planText, reportMarkdown, onEditPlan, onStar
   const showResearchLoading = isResearching && !reportMarkdown;
 
   return (
-    <div className="h-full overflow-hidden">
+    <div className="h-full overflow-hidden bg-background">
       <AnimatePresence mode="wait">
         {stage === 'GENERATING_PLAN' && <SkeletonView key="skeleton" />}
         {stage === 'REVIEWING_PLAN' && (
