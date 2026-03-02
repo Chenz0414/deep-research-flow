@@ -12,6 +12,11 @@ export interface MessageItem {
   content: string;
 }
 
+/** API message format: uses `text` field */
+export interface ApiMessage {
+  text: string;
+}
+
 export interface PlanSection {
   title: string;
   description: string;
@@ -23,8 +28,13 @@ export interface SSEEvent {
 }
 
 export interface ChatRequestBody {
-  messages: MessageItem[];
+  chat_id: number;
+  model: string;
+  messages: ApiMessage[];
   is_deep_search: boolean;
   is_edit_plan: boolean;
   deep_search_step?: number;
+  key: string;
+  report_style?: number;
+  language?: string;
 }
