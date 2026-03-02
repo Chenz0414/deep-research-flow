@@ -103,7 +103,7 @@ const Index = () => {
 
   // ---- User actions ----
 
-  const handleSend = useCallback((message: string) => {
+  const handleSend = useCallback((message: string, deepSearchStep: number = 2) => {
     const id = crypto.randomUUID();
     const title = message.length > 30 ? message.slice(0, 30) + '...' : message;
     const newHistory: MessageItem[] = [{ role: 'user', content: message }];
@@ -117,6 +117,7 @@ const Index = () => {
       messageHistory: newHistory,
       planText: '',
       reportMarkdown: '',
+      deepSearchStep,
     };
 
     setSessions(prev => [newSession, ...prev]);
@@ -128,7 +129,7 @@ const Index = () => {
       model: MODEL,
       is_deep_search: false,
       is_edit_plan: false,
-      deep_search_step: 3,
+      deep_search_step: deepSearchStep,
       language: 'zh-CN',
     }, 'plan');
   }, [startSessionStream]);
@@ -195,12 +196,14 @@ const Index = () => {
 
       reportAccs.current.set(activeSessionId, '');
 
+      const step = session.deepSearchStep ?? 2;
       setTimeout(() => {
         startSessionStream(activeSessionId, toApiMessages(newHistory), {
           chat_id: CHAT_ID,
           model: MODEL,
           is_deep_search: true,
           is_edit_plan: false,
+          deep_search_step: step,
           language: 'zh-CN',
         }, 'research');
       }, 0);
