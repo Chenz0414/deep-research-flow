@@ -1,4 +1,4 @@
-export type Stage = 'IDLE' | 'GENERATING_PLAN' | 'REVIEWING_PLAN' | 'RESEARCHING';
+export type Stage = 'IDLE' | 'GENERATING_PLAN' | 'REVIEWING_PLAN' | 'RESEARCHING' | 'COMPLETED';
 
 export interface ThoughtItem {
   id: string;

@@ -15,8 +15,10 @@ interface RightPanelProps {
 }
 
 export function RightPanel({ stage, planText, reportMarkdown, onEditPlan, onStartResearch, isLoading }: RightPanelProps) {
-  // Show loading view when RESEARCHING but no content yet
-  const showResearchLoading = stage === 'RESEARCHING' && !reportMarkdown;
+  const isResearching = stage === 'RESEARCHING';
+  const isCompleted = stage === 'COMPLETED';
+  const showReport = (isResearching || isCompleted) && reportMarkdown.length > 0;
+  const showResearchLoading = isResearching && !reportMarkdown;
 
   return (
     <div className="h-full overflow-hidden">
@@ -33,14 +35,14 @@ export function RightPanel({ stage, planText, reportMarkdown, onEditPlan, onStar
             />
           </div>
         )}
-        {stage === 'RESEARCHING' && showResearchLoading && (
+        {showResearchLoading && (
           <ResearchLoadingView key="research-loading" />
         )}
-        {stage === 'RESEARCHING' && !showResearchLoading && (
+        {showReport && (
           <MarkdownViewer
             key="report"
             content={reportMarkdown}
-            isStreaming={true}
+            isStreaming={isResearching}
           />
         )}
       </AnimatePresence>
