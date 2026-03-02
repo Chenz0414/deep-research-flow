@@ -1,7 +1,7 @@
 import { useCallback, useRef } from 'react';
 import type { ThoughtItem, MessageItem } from '@/types/deep-research';
 
-const API_URL = '/ai/deep_search/chat';
+const API_URL = 'https://apiv2.wahezu.cn/ai/deep_search/chat';
 
 interface UseSSEOptions {
   onThought: (thought: ThoughtItem) => void;
@@ -26,7 +26,7 @@ export function useSSE({ onThought, onContent, onComplete, onError }: UseSSEOpti
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer mock_token',
+          'Authorization': 'Bearer e9QyzZfgMk43Re2tsgwGzFWFHGv3P94g',
         },
         body: JSON.stringify({ messages, ...params }),
         signal: controller.signal,
