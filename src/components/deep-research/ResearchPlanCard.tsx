@@ -1,8 +1,15 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Circle, Play, Send } from 'lucide-react';
+import { Circle, Play, Send, Pencil } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 import type { PlanSection } from '@/types/deep-research';
 
 interface ResearchPlanCardProps {
@@ -36,6 +43,7 @@ function parseSections(text: string): PlanSection[] {
 }
 
 export function ResearchPlanCard({ planText, statusText, onEdit, onStart, isLoading }: ResearchPlanCardProps) {
+  const [dialogOpen, setDialogOpen] = useState(false);
   const [requirement, setRequirement] = useState('');
   const sections = parseSections(planText);
 
@@ -43,6 +51,7 @@ export function ResearchPlanCard({ planText, statusText, onEdit, onStart, isLoad
     if (!requirement.trim()) return;
     onEdit(requirement.trim());
     setRequirement('');
+    setDialogOpen(false);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -53,60 +62,86 @@ export function ResearchPlanCard({ planText, statusText, onEdit, onStart, isLoad
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.97 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.35 }}
-      className="w-full max-w-2xl mx-auto"
-    >
-      <div className="rounded-xl border bg-card shadow-sm overflow-hidden">
-        {/* Header */}
-        <div className="px-6 py-5 border-b bg-muted/30">
-          <h2 className="text-lg font-semibold text-foreground">研究调研计划</h2>
-          <p className="text-sm text-muted-foreground mt-1">
-            AI 已为您生成以下研究大纲，请确认后开始深度研究。
-          </p>
-        </div>
+    <>
+      <motion.div
+        initial={{ opacity: 0, scale: 0.97 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.35 }}
+        className="w-full max-w-2xl mx-auto"
+      >
+        <div className="rounded-xl border bg-card shadow-sm overflow-hidden">
+          {/* Header */}
+          <div className="px-6 py-5 border-b bg-muted/30">
+            <h2 className="text-lg font-semibold text-foreground">研究调研计划</h2>
+            <p className="text-sm text-muted-foreground mt-1">
+              AI 已为您生成以下研究大纲，请确认后开始深度研究。
+            </p>
+          </div>
 
-        {/* Content */}
-        <div className="px-6 py-4">
-          <motion.div className="space-y-3">
-            {sections.map((section, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, x: -6 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: i * 0.06 }}
-                className="flex items-start gap-3 py-2"
-              >
-                <div className="mt-0.5 flex-shrink-0">
-                  <Circle className="w-4 h-4 text-primary/50" strokeWidth={2} />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-foreground">{section.title}</p>
-                  {section.description && (
-                    <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
-                      {section.description}
-                    </p>
-                  )}
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
+          {/* Content */}
+          <div className="px-6 py-4">
+            <motion.div className="space-y-3">
+              {sections.map((section, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, x: -6 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.06 }}
+                  className="flex items-start gap-3 py-2"
+                >
+                  <div className="mt-0.5 flex-shrink-0">
+                    <Circle className="w-4 h-4 text-primary/50" strokeWidth={2} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-foreground">{section.title}</p>
+                    {section.description && (
+                      <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
+                        {section.description}
+                      </p>
+                    )}
+                  </div>
+                </motion.div>
+              ))}
+            </motion.div>
+          </div>
 
-        {/* Requirement input */}
-        <div className="px-6 py-3 border-t bg-muted/10">
-          <div className="flex items-center gap-2">
+          {/* Footer */}
+          <div className="px-6 py-4 border-t bg-muted/20 flex items-center justify-between">
+            <p className="text-xs text-muted-foreground/70 italic">
+              {statusText || 'Organizing details...'}
+            </p>
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" size="sm" onClick={() => { setRequirement(''); setDialogOpen(true); }}>
+                <Pencil className="w-3.5 h-3.5 mr-1.5" />
+                修改计划
+              </Button>
+              <Button size="sm" onClick={onStart} disabled={isLoading}>
+                <Play className="w-3.5 h-3.5 mr-1.5" />
+                开始研究
+              </Button>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>修改研究计划</DialogTitle>
+            <DialogDescription>
+              输入您的新需求，AI 将根据您的要求重新生成研究计划。
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex items-center gap-2 mt-2">
             <Input
               value={requirement}
               onChange={(e) => setRequirement(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="输入新的需求，重新生成计划..."
+              placeholder="描述您的新需求..."
               className="flex-1 text-sm"
+              autoFocus
             />
             <Button
-              variant="outline"
               size="icon"
               onClick={handleSubmitRequirement}
               disabled={!requirement.trim()}
@@ -115,19 +150,8 @@ export function ResearchPlanCard({ planText, statusText, onEdit, onStart, isLoad
               <Send className="w-4 h-4" />
             </Button>
           </div>
-        </div>
-
-        {/* Footer */}
-        <div className="px-6 py-4 border-t bg-muted/20 flex items-center justify-between">
-          <p className="text-xs text-muted-foreground/70 italic">
-            {statusText || 'Organizing details...'}
-          </p>
-          <Button size="sm" onClick={onStart} disabled={isLoading}>
-            <Play className="w-3.5 h-3.5 mr-1.5" />
-            开始研究
-          </Button>
-        </div>
-      </div>
-    </motion.div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
