@@ -1,15 +1,15 @@
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Circle, CheckCircle2, Pencil, Play } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Circle, Play, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
 import type { PlanSection } from '@/types/deep-research';
 
 interface ResearchPlanCardProps {
   planText: string;
   sections: PlanSection[];
   statusText?: string;
-  onEdit: (newPlan: string) => void;
+  onEdit: (newRequirement: string) => void;
   onStart: () => void;
   isLoading?: boolean;
 }
@@ -21,7 +21,6 @@ function parseSections(text: string): PlanSection[] {
 
   for (const line of lines) {
     const trimmed = line.trim();
-    // Match numbered items or markdown headers
     const match = trimmed.match(/^(?:#{1,3}\s+|\d+[\.\)]\s*)(.*)/);
     if (match) {
       if (current) sections.push(current);
@@ -29,7 +28,6 @@ function parseSections(text: string): PlanSection[] {
     } else if (current) {
       current.description += (current.description ? ' ' : '') + trimmed;
     } else {
-      // Standalone line before any heading
       sections.push({ title: trimmed, description: '' });
     }
   }
@@ -38,13 +36,20 @@ function parseSections(text: string): PlanSection[] {
 }
 
 export function ResearchPlanCard({ planText, statusText, onEdit, onStart, isLoading }: ResearchPlanCardProps) {
-  const [isEditing, setIsEditing] = useState(false);
-  const [editText, setEditText] = useState(planText);
+  const [requirement, setRequirement] = useState('');
   const sections = parseSections(planText);
 
-  const handleSaveEdit = () => {
-    onEdit(editText);
-    setIsEditing(false);
+  const handleSubmitRequirement = () => {
+    if (!requirement.trim()) return;
+    onEdit(requirement.trim());
+    setRequirement('');
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmitRequirement();
+    }
   };
 
   return (
@@ -65,53 +70,51 @@ export function ResearchPlanCard({ planText, statusText, onEdit, onStart, isLoad
 
         {/* Content */}
         <div className="px-6 py-4">
-          <AnimatePresence mode="wait">
-            {isEditing ? (
+          <motion.div className="space-y-3">
+            {sections.map((section, i) => (
               <motion.div
-                key="edit"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
+                key={i}
+                initial={{ opacity: 0, x: -6 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: i * 0.06 }}
+                className="flex items-start gap-3 py-2"
               >
-                <Textarea
-                  value={editText}
-                  onChange={(e) => setEditText(e.target.value)}
-                  className="min-h-[240px] text-sm leading-relaxed resize-none font-mono bg-muted/30"
-                  placeholder="编辑您的研究计划..."
-                />
+                <div className="mt-0.5 flex-shrink-0">
+                  <Circle className="w-4 h-4 text-primary/50" strokeWidth={2} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-foreground">{section.title}</p>
+                  {section.description && (
+                    <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
+                      {section.description}
+                    </p>
+                  )}
+                </div>
               </motion.div>
-            ) : (
-              <motion.div
-                key="view"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="space-y-3"
-              >
-                {sections.map((section, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, x: -6 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.06 }}
-                    className="flex items-start gap-3 py-2"
-                  >
-                    <div className="mt-0.5 flex-shrink-0">
-                      <Circle className="w-4 h-4 text-primary/50" strokeWidth={2} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-foreground">{section.title}</p>
-                      {section.description && (
-                        <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
-                          {section.description}
-                        </p>
-                      )}
-                    </div>
-                  </motion.div>
-                ))}
-              </motion.div>
-            )}
-          </AnimatePresence>
+            ))}
+          </motion.div>
+        </div>
+
+        {/* Requirement input */}
+        <div className="px-6 py-3 border-t bg-muted/10">
+          <div className="flex items-center gap-2">
+            <Input
+              value={requirement}
+              onChange={(e) => setRequirement(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="输入新的需求，重新生成计划..."
+              className="flex-1 text-sm"
+            />
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={handleSubmitRequirement}
+              disabled={!requirement.trim()}
+              className="flex-shrink-0"
+            >
+              <Send className="w-4 h-4" />
+            </Button>
+          </div>
         </div>
 
         {/* Footer */}
@@ -119,30 +122,10 @@ export function ResearchPlanCard({ planText, statusText, onEdit, onStart, isLoad
           <p className="text-xs text-muted-foreground/70 italic">
             {statusText || 'Organizing details...'}
           </p>
-          <div className="flex items-center gap-2">
-            {isEditing ? (
-              <>
-                <Button variant="ghost" size="sm" onClick={() => setIsEditing(false)}>
-                  取消
-                </Button>
-                <Button variant="outline" size="sm" onClick={handleSaveEdit}>
-                  <CheckCircle2 className="w-3.5 h-3.5 mr-1.5" />
-                  提交修改
-                </Button>
-              </>
-            ) : (
-              <>
-                <Button variant="ghost" size="sm" onClick={() => { setEditText(planText); setIsEditing(true); }}>
-                  <Pencil className="w-3.5 h-3.5 mr-1.5" />
-                  修改计划
-                </Button>
-                <Button size="sm" onClick={onStart} disabled={isLoading}>
-                  <Play className="w-3.5 h-3.5 mr-1.5" />
-                  开始研究
-                </Button>
-              </>
-            )}
-          </div>
+          <Button size="sm" onClick={onStart} disabled={isLoading}>
+            <Play className="w-3.5 h-3.5 mr-1.5" />
+            开始研究
+          </Button>
         </div>
       </div>
     </motion.div>
