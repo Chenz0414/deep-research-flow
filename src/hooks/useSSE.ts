@@ -1,4 +1,5 @@
 import type { ThoughtItem, ApiMessage, ResearchRound } from '@/types/deep-research';
+import type { ResearchProgress } from '@/types/research-session';
 
 const API_URL = 'https://apiv2.wahezu.cn/ai/deep_search/chat';
 const USE_MOCK = true;
@@ -12,6 +13,9 @@ export interface SSECallbacks {
   onContent: (chunk: string) => void;
   onResearchRound: (round: ResearchRound) => void;
   onUpdateRound: (roundId: string, updater: (r: ResearchRound) => ResearchRound) => void;
+  onProgressUpdate: (progress: ResearchProgress) => void;
+  /** Called when research rounds are done, before report writing starts */
+  onResearchDone: () => void;
   onComplete: (messageId?: string) => void;
   onError: (error: string) => void;
 }
