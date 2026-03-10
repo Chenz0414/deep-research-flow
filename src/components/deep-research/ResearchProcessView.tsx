@@ -10,6 +10,7 @@ import type { ResearchRound } from '@/types/deep-research';
 interface ResearchProcessViewProps {
   rounds: ResearchRound[];
   isResearching: boolean;
+  hideTopBar?: boolean;
 }
 
 function SearchRoundCard({ round }: { round: ResearchRound }) {
