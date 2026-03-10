@@ -63,6 +63,18 @@ const Index = () => {
           updateSession(sessionId, s => ({ ...s, reportMarkdown: acc }));
         }
       },
+      onResearchRound: (round: ResearchRound) => {
+        updateSession(sessionId, s => ({
+          ...s,
+          researchRounds: [...s.researchRounds, round],
+        }));
+      },
+      onUpdateRound: (roundId: string, updater: (r: ResearchRound) => ResearchRound) => {
+        updateSession(sessionId, s => ({
+          ...s,
+          researchRounds: s.researchRounds.map(r => r.id === roundId ? updater(r) : r),
+        }));
+      },
       onComplete: () => {
         abortsRef.current.delete(sessionId);
         if (streamPhase === 'plan') {
