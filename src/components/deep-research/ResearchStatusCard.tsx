@@ -1,17 +1,17 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
 import { CheckCircle2, Circle, ChevronUp } from 'lucide-react';
+import type { ResearchProgress } from '@/types/research-session';
 
 interface PlanSection {
   title: string;
-  completed: boolean;
 }
 
 interface ResearchStatusCardProps {
   isCompleted: boolean;
+  isWritingReport: boolean;
   planText: string;
+  progress: ResearchProgress;
   onToggleRightPanel: () => void;
   rightPanelVisible: boolean;
 }
@@ -22,7 +22,7 @@ function extractSections(planText: string): PlanSection[] {
   for (const line of lines) {
     const match = line.match(/^###\s+\d+\.\s*(.+)/);
     if (match) {
-      sections.push({ title: match[1].trim(), completed: false });
+      sections.push({ title: match[1].trim() });
     }
   }
   return sections;
@@ -30,18 +30,20 @@ function extractSections(planText: string): PlanSection[] {
 
 export function ResearchStatusCard({
   isCompleted,
+  isWritingReport,
   planText,
+  progress,
   onToggleRightPanel,
   rightPanelVisible,
 }: ResearchStatusCardProps) {
   const [expanded, setExpanded] = useState(true);
   const sections = extractSections(planText);
 
-  // Mark all as completed when research is done
-  const displaySections = sections.map((s, i) => ({
-    ...s,
-    completed: isCompleted ? true : false,
-  }));
+  const statusLabel = isCompleted
+    ? '研究完成'
+    : isWritingReport
+      ? '正在撰写报告'
+      : '研究中';
 
   return (
     <motion.div
@@ -52,9 +54,12 @@ export function ResearchStatusCard({
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3">
         <div className="flex items-center gap-2">
-          <h3 className="text-sm font-semibold text-title">
-            {isCompleted ? '研究完成' : '研究中'}
-          </h3>
+          <h3 className="text-sm font-semibold text-title">{statusLabel}</h3>
+          {!isCompleted && !isWritingReport && progress.totalSections > 0 && (
+            <span className="text-xs text-subtitle">
+              {progress.completedSections}/{progress.totalSections}
+            </span>
+          )}
         </div>
         <div className="flex items-center gap-3">
           <button
@@ -74,7 +79,7 @@ export function ResearchStatusCard({
 
       {/* Sections list */}
       <AnimatePresence>
-        {expanded && displaySections.length > 0 && (
+        {expanded && sections.length > 0 && (
           <motion.div
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
@@ -83,18 +88,21 @@ export function ResearchStatusCard({
             className="overflow-hidden"
           >
             <div className="px-4 pb-3 space-y-2">
-              {displaySections.map((section, i) => (
-                <div key={i} className="flex items-center gap-2.5">
-                  {section.completed ? (
-                    <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0" />
-                  ) : (
-                    <Circle className="w-4 h-4 text-subtitle/40 flex-shrink-0" />
-                  )}
-                  <span className={`text-sm ${section.completed ? 'text-body' : 'text-subtitle'}`}>
-                    {section.title}
-                  </span>
-                </div>
-              ))}
+              {sections.map((section, i) => {
+                const completed = isCompleted || i < progress.completedSections;
+                return (
+                  <div key={i} className="flex items-center gap-2.5">
+                    {completed ? (
+                      <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0" />
+                    ) : (
+                      <Circle className="w-4 h-4 text-subtitle/40 flex-shrink-0" />
+                    )}
+                    <span className={`text-sm ${completed ? 'text-body' : 'text-subtitle'}`}>
+                      {section.title}
+                    </span>
+                  </div>
+                );
+              })}
             </div>
           </motion.div>
         )}

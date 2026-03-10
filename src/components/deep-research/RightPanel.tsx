@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import type { Stage } from '@/types/deep-research';
+import type { ResearchProgress } from '@/types/research-session';
 import { SkeletonView } from './SkeletonView';
 import { ResearchPlanCard } from './ResearchPlanCard';
 import { ResearchLoadingView } from './ResearchLoadingView';
@@ -17,23 +18,29 @@ interface RightPanelProps {
   isLoading?: boolean;
   onToggleRightPanel?: () => void;
   rightPanelVisible?: boolean;
+  researchProgress?: ResearchProgress;
+  isWritingReport?: boolean;
 }
 
 export function RightPanel({
   stage, planText, reportMarkdown,
   onEditPlan, onStartResearch, isLoading,
   onToggleRightPanel, rightPanelVisible,
+  researchProgress, isWritingReport,
 }: RightPanelProps) {
   const isResearching = stage === 'RESEARCHING';
   const isCompleted = stage === 'COMPLETED';
   const isResearchPhase = isResearching || isCompleted;
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  // Only show report when writing has started (research rounds done)
+  const showReport = (isWritingReport || isCompleted) && reportMarkdown.length > 0;
+
   useEffect(() => {
-    if (isResearching && scrollRef.current) {
+    if (showReport && scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [reportMarkdown, isResearching]);
+  }, [reportMarkdown, showReport]);
 
   return (
     <div className="h-full overflow-hidden bg-background">
@@ -67,26 +74,33 @@ export function RightPanel({
               {/* Status card */}
               <ResearchStatusCard
                 isCompleted={isCompleted}
+                isWritingReport={isWritingReport ?? false}
                 planText={planText}
+                progress={researchProgress ?? { totalSections: 0, completedSections: 0 }}
                 onToggleRightPanel={onToggleRightPanel || (() => {})}
                 rightPanelVisible={rightPanelVisible ?? true}
               />
 
-              {/* Report content */}
-              {reportMarkdown.length > 0 ? (
+              {/* Report - only after research rounds complete */}
+              {showReport && (
                 <div className="px-4 sm:px-8 py-6">
                   <article className="prose prose-sm max-w-none">
                     <ReactMarkdown remarkPlugins={[remarkGfm]}>
                       {reportMarkdown}
                     </ReactMarkdown>
-                    {isResearching && (
+                    {isResearching && isWritingReport && (
                       <span className="inline-block w-0.5 h-5 bg-primary ml-0.5 animate-blink-cursor" />
                     )}
                   </article>
                 </div>
-              ) : isResearching ? (
-                <ResearchLoadingView />
-              ) : null}
+              )}
+
+              {/* Loading state before report */}
+              {isResearching && !isWritingReport && !showReport && (
+                <div className="py-8 flex items-center justify-center">
+                  <p className="text-xs text-subtitle">正在进行深度研究，完成后将生成报告...</p>
+                </div>
+              )}
             </div>
           </div>
         )}

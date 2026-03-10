@@ -8,7 +8,7 @@ import { ResearchProcessView } from '@/components/deep-research/ResearchProcessV
 import { Button } from '@/components/ui/button';
 import { FileText, Search, Download } from 'lucide-react';
 import type { Stage, ThoughtItem, MessageItem, ApiMessage, ResearchRound } from '@/types/deep-research';
-import type { ResearchSession } from '@/types/research-session';
+import type { ResearchSession, ResearchProgress } from '@/types/research-session';
 
 function toApiMessages(messages: MessageItem[]): ApiMessage[] {
   return messages.filter(m => m.role === 'user').map(m => ({ text: m.content }));
@@ -78,6 +78,12 @@ const Index = () => {
           researchRounds: s.researchRounds.map(r => r.id === roundId ? updater(r) : r),
         }));
       },
+      onProgressUpdate: (progress: ResearchProgress) => {
+        updateSession(sessionId, s => ({ ...s, researchProgress: progress }));
+      },
+      onResearchDone: () => {
+        updateSession(sessionId, s => ({ ...s, isWritingReport: true }));
+      },
       onComplete: () => {
         abortsRef.current.delete(sessionId);
         if (streamPhase === 'plan') {
@@ -122,6 +128,8 @@ const Index = () => {
       planText: '',
       reportMarkdown: '',
       researchRounds: [],
+      researchProgress: { totalSections: 0, completedSections: 0 },
+      isWritingReport: false,
       deepSearchStep,
     };
 
@@ -207,6 +215,8 @@ const Index = () => {
         thoughts: [],
         reportMarkdown: '',
         researchRounds: [],
+        researchProgress: { totalSections: 0, completedSections: 0 },
+        isWritingReport: false,
       } : s);
     });
   }, [activeSessionId, startSessionStream]);
@@ -266,6 +276,8 @@ const Index = () => {
                 onStartResearch={handleStartResearch}
                 onToggleRightPanel={() => setShowRightPanel(prev => !prev)}
                 rightPanelVisible={showRightPanel}
+                researchProgress={activeSession.researchProgress}
+                isWritingReport={activeSession.isWritingReport}
               />
             </div>
             {(activeSession.stage === 'RESEARCHING' || activeSession.stage === 'COMPLETED') && showRightPanel && (
