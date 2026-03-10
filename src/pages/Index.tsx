@@ -244,11 +244,17 @@ const Index = () => {
           </div>
           {(activeSession.stage === 'RESEARCHING' || activeSession.stage === 'COMPLETED') && (
             <>
-              <div className="hidden sm:block w-[280px] flex-shrink-0">
-                <AgentPanel stage={activeSession.stage} thoughts={activeSession.thoughts} />
+              <div className="hidden sm:block w-[320px] flex-shrink-0 border-l border-border/50 h-full">
+                <ResearchProcessView
+                  rounds={activeSession.researchRounds}
+                  isResearching={activeSession.stage === 'RESEARCHING'}
+                />
               </div>
               <div className="sm:hidden">
-                <AgentPanel stage={activeSession.stage} thoughts={activeSession.thoughts} />
+                <ResearchProcessView
+                  rounds={activeSession.researchRounds}
+                  isResearching={activeSession.stage === 'RESEARCHING'}
+                />
               </div>
             </>
           )}
