@@ -15,11 +15,11 @@ const SEARCH_MODES = [
 ] as const;
 
 const WRITING_STYLES = [
-  { id: 'academic', label: '学术风格', icon: GraduationCap, desc: '正式、客观、逻辑严谨，使用精准术语，适用于论文、报告与学术研究。' },
-  { id: 'popular', label: '科普风格', icon: BookOpen, desc: '通俗易懂、生动自然，适合向大众解释复杂概念。' },
-  { id: 'news', label: '新闻风格', icon: Newspaper, desc: '事实导向、简洁客观，强调信息准确与中立表达。' },
-  { id: 'social', label: '社交媒体风格', icon: Share2, desc: '简短有力、吸引注意力，适合分享与传播。' },
-  { id: 'strategy', label: '战略投资风格', icon: BarChart3, desc: '深度分析、数据驱动，聚焦市场趋势与投资价值判断。' },
+  { id: 'academic', label: '学术', icon: GraduationCap, desc: '正式、客观、逻辑严谨，使用精准术语，适用于论文、报告与学术研究。' },
+  { id: 'popular', label: '科普', icon: BookOpen, desc: '通俗易懂、生动自然，适合向大众解释复杂概念。' },
+  { id: 'news', label: '新闻', icon: Newspaper, desc: '事实导向、简洁客观，强调信息准确与中立表达。' },
+  { id: 'social', label: '社交媒体', icon: Share2, desc: '简短有力、吸引注意力，适合分享与传播。' },
+  { id: 'strategy', label: '战略投资', icon: BarChart3, desc: '深度分析、数据驱动，聚焦市场趋势与投资价值判断。' },
 ] as const;
 
 const QUICK_TOPICS = [
@@ -121,8 +121,9 @@ export function WelcomeView({ onSend }: WelcomeViewProps) {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.25, duration: 0.5 }}
-            className="space-y-2"
+            className="space-y-2.5"
           >
+            <p className="text-xs font-medium text-subtitle tracking-wide text-center">研究类型</p>
             <div className="flex items-center gap-1.5 bg-card-alt rounded-xl p-1 border border-border/50">
               {WRITING_STYLES.map((style) => {
                 const StyleIcon = style.icon;
