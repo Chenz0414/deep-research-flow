@@ -99,7 +99,7 @@ export function WelcomeView({ onSend }: WelcomeViewProps) {
             </motion.div>
             <div className="space-y-3">
               <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-gradient-primary leading-tight">
-                DeepFlow
+                深度研究
               </h1>
               <p className="text-base sm:text-lg text-subtitle leading-relaxed max-w-lg mx-auto">
                 AI 驱动的深度研究助手，自动生成调研计划并执行多维分析，输出专业研究报告
