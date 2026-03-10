@@ -1,4 +1,4 @@
-import type { ThoughtItem, ApiMessage } from '@/types/deep-research';
+import type { ThoughtItem, ApiMessage, ResearchRound } from '@/types/deep-research';
 
 const API_URL = 'https://apiv2.wahezu.cn/ai/deep_search/chat';
 const USE_MOCK = true;
