@@ -61,7 +61,7 @@ export function AppSidebar({ sessions, activeSessionId, onNewResearch, onSelectS
             </button>
           </div>
         </div>
-        <Button onClick={onNewResearch} className="w-full justify-center gap-2 gradient-primary border-0 text-white hover:opacity-90 transition-opacity" size="sm">
+        <Button onClick={() => { onNewResearch(); setMobileOpen(false); }} className="w-full justify-center gap-2 gradient-primary border-0 text-white hover:opacity-90 transition-opacity" size="sm">
           <Plus className="w-4 h-4" />
           新建研究
         </Button>
