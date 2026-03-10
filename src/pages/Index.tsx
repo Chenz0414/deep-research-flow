@@ -228,13 +228,16 @@ const Index = () => {
               onStartResearch={handleStartResearch}
             />
           </div>
-          <div className="hidden sm:block w-[280px] flex-shrink-0">
-            <AgentPanel stage={activeSession.stage} thoughts={activeSession.thoughts} />
-          </div>
-          {/* Mobile agent panel is rendered inside AgentPanel as fixed bottom sheet */}
-          <div className="sm:hidden">
-            <AgentPanel stage={activeSession.stage} thoughts={activeSession.thoughts} />
-          </div>
+          {(activeSession.stage === 'RESEARCHING' || activeSession.stage === 'COMPLETED') && (
+            <>
+              <div className="hidden sm:block w-[280px] flex-shrink-0">
+                <AgentPanel stage={activeSession.stage} thoughts={activeSession.thoughts} />
+              </div>
+              <div className="sm:hidden">
+                <AgentPanel stage={activeSession.stage} thoughts={activeSession.thoughts} />
+              </div>
+            </>
+          )}
         </>
       ) : (
         <div className="flex-1 min-w-0">
