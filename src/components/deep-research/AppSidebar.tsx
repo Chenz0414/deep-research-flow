@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, Search, FileText, Clock, CheckCircle2, Sparkles, Loader2, Menu, X } from 'lucide-react';
+import { Plus, Search, FileText, Clock, CheckCircle2, Sparkles, Loader2, Menu, X, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type { ResearchSession } from '@/types/research-session';
@@ -22,6 +22,7 @@ const STAGE_CONFIG: Record<string, { label: string; color: string; pulse?: boole
 export function AppSidebar({ sessions, activeSessionId, onNewResearch, onSelectSession }: AppSidebarProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
 
   const filtered = sessions.filter(s =>
     s.title.toLowerCase().includes(searchQuery.toLowerCase())
@@ -29,7 +30,7 @@ export function AppSidebar({ sessions, activeSessionId, onNewResearch, onSelectS
 
   const sidebarContent = (
     <div className="h-full flex flex-col bg-card border-r border-border/50 w-full sm:w-[260px]">
-      {/* Brand */}
+      {/* Brand + collapse button */}
       <div className="p-5 flex-shrink-0 space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2.5">
@@ -37,13 +38,23 @@ export function AppSidebar({ sessions, activeSessionId, onNewResearch, onSelectS
               <Sparkles className="w-4 h-4 text-white" />
             </div>
             <h1 className="text-base font-bold text-title tracking-tight">
-              DeepFlow
+              深度研究
             </h1>
           </div>
-          {/* Mobile close */}
-          <button onClick={() => setMobileOpen(false)} className="sm:hidden p-1 rounded-md hover:bg-hover-bg transition-colors cursor-pointer">
-            <X className="w-5 h-5 text-body2" />
-          </button>
+          <div className="flex items-center gap-1">
+            {/* Desktop collapse */}
+            <button
+              onClick={() => setCollapsed(true)}
+              className="hidden sm:flex p-1.5 rounded-md hover:bg-hover-bg transition-colors cursor-pointer"
+              title="收起侧边栏"
+            >
+              <PanelLeftClose className="w-4 h-4 text-subtitle" />
+            </button>
+            {/* Mobile close */}
+            <button onClick={() => setMobileOpen(false)} className="sm:hidden p-1 rounded-md hover:bg-hover-bg transition-colors cursor-pointer">
+              <X className="w-5 h-5 text-body2" />
+            </button>
+          </div>
         </div>
         <Button onClick={onNewResearch} className="w-full justify-center gap-2 gradient-primary border-0 text-white hover:opacity-90 transition-opacity" size="sm">
           <Plus className="w-4 h-4" />
@@ -144,10 +155,25 @@ export function AppSidebar({ sessions, activeSessionId, onNewResearch, onSelectS
         </div>
       )}
 
-      {/* Desktop sidebar */}
-      <div className="hidden sm:block h-full">
-        {sidebarContent}
-      </div>
+      {/* Desktop: collapsed state → expand button */}
+      {collapsed && (
+        <div className="hidden sm:flex h-full flex-col items-center py-4 px-1.5 border-r border-border/50 bg-card">
+          <button
+            onClick={() => setCollapsed(false)}
+            className="p-2 rounded-lg hover:bg-hover-bg transition-colors cursor-pointer"
+            title="展开侧边栏"
+          >
+            <PanelLeftOpen className="w-4.5 h-4.5 text-subtitle" />
+          </button>
+        </div>
+      )}
+
+      {/* Desktop: expanded sidebar */}
+      {!collapsed && (
+        <div className="hidden sm:block h-full">
+          {sidebarContent}
+        </div>
+      )}
     </>
   );
 }

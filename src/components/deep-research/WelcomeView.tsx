@@ -362,7 +362,7 @@ export function WelcomeView({ onSend }: WelcomeViewProps) {
       {/* Footer */}
       <footer className="py-10 px-4 sm:px-8 border-t border-border/40 text-center">
         <p className="text-xs text-subtitle">
-          © 2024 DeepFlow. AI 驱动的深度研究助手。
+          © 2024 深度研究. AI 驱动的深度研究助手。
         </p>
       </footer>
     </div>
