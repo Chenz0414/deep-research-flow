@@ -58,6 +58,7 @@ const FAQS = [
 export function WelcomeView({ onSend }: WelcomeViewProps) {
   const [input, setInput] = useState('');
   const [selectedStep, setSelectedStep] = useState(2);
+  const [selectedStyle, setSelectedStyle] = useState('academic');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
