@@ -145,7 +145,7 @@ export function AppSidebar({ sessions, activeSessionId, onNewResearch, onSelectS
 
   return (
     <>
-      {/* Mobile hamburger trigger - only show when not controlled externally */}
+      {/* Mobile hamburger trigger - hide when controlled externally (research page has its own in top bar) */}
       {onMobileOpenChange == null && (
         <button
           onClick={() => setMobileOpen(true)}

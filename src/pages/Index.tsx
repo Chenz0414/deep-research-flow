@@ -239,6 +239,7 @@ const Index = () => {
   const activeSession = sessions.find(s => s.id === activeSessionId);
   const stage: Stage = activeSession?.stage ?? 'IDLE';
   const isActive = stage !== 'IDLE' && !!activeSession;
+  const hasTopBar = isActive && activeSession && (activeSession.stage === 'RESEARCHING' || activeSession.stage === 'COMPLETED');
 
   return (
     <div className="h-screen w-screen flex overflow-hidden bg-background">
@@ -248,8 +249,7 @@ const Index = () => {
           activeSessionId={activeSessionId}
           onNewResearch={handleNewResearch}
           onSelectSession={handleSelectSession}
-          mobileOpen={mobileSidebarOpen}
-          onMobileOpenChange={setMobileSidebarOpen}
+          {...(hasTopBar ? { mobileOpen: mobileSidebarOpen, onMobileOpenChange: setMobileSidebarOpen } : {})}
         />
       </div>
 
