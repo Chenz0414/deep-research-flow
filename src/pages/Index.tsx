@@ -21,6 +21,7 @@ const Index = () => {
   const [sessions, setSessions] = useState<ResearchSession[]>([]);
   const [activeSessionId, setActiveSessionId] = useState<string | undefined>();
   const [showRightPanel, setShowRightPanel] = useState(true);
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const { toast } = useToast();
 
   const abortsRef = useRef<Map<string, () => void>>(new Map());
