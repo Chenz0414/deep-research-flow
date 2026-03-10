@@ -172,6 +172,11 @@ function SummaryCard({ round }: { round: ResearchRound }) {
 
 export function ResearchProcessView({ rounds, isResearching, hideTopBar }: ResearchProcessViewProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [lightbox, setLightbox] = useState<{ src: string; alt: string } | null>(null);
+
+  const handleImageClick = useCallback((src: string, alt: string) => {
+    setLightbox({ src, alt });
+  }, []);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -186,12 +191,11 @@ export function ResearchProcessView({ rounds, isResearching, hideTopBar }: Resea
       transition={{ duration: 0.4 }}
       className="h-full flex flex-col"
     >
-
       {/* Scrolling rounds */}
-      <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 space-y-4 scrollbar-thin">
+      <div ref={scrollRef} className="flex-1 overflow-y-auto overflow-x-hidden px-4 sm:px-6 py-4 space-y-4 scrollbar-thin">
         {rounds.map((round) => {
           if (round.type === 'search') {
-            return <SearchRoundCard key={round.id} round={round} />;
+            return <SearchRoundCard key={round.id} round={round} onImageClick={handleImageClick} />;
           }
           if (round.type === 'summary') {
             return <SummaryCard key={round.id} round={round} />;
@@ -214,6 +218,17 @@ export function ResearchProcessView({ rounds, isResearching, hideTopBar }: Resea
           </div>
         )}
       </div>
+
+      {/* Image lightbox */}
+      <AnimatePresence>
+        {lightbox && (
+          <ImageLightbox
+            src={lightbox.src}
+            alt={lightbox.alt}
+            onClose={() => setLightbox(null)}
+          />
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }
