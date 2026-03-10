@@ -116,14 +116,14 @@ export function WelcomeView({ onSend }: WelcomeViewProps) {
             </div>
           </div>
 
-          {/* Writing Style Selector */}
+          {/* Writing Style Selector - Horizontal Tabs */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.25, duration: 0.5 }}
             className="space-y-2"
           >
-            <div className="space-y-1.5">
+            <div className="flex items-center gap-1.5 bg-card-alt rounded-xl p-1 border border-border/50">
               {WRITING_STYLES.map((style) => {
                 const StyleIcon = style.icon;
                 const isSelected = selectedStyle === style.id;
@@ -131,30 +131,22 @@ export function WelcomeView({ onSend }: WelcomeViewProps) {
                   <button
                     key={style.id}
                     onClick={() => setSelectedStyle(style.id)}
-                    className={`w-full flex items-start gap-3 px-4 py-3 rounded-xl border transition-all duration-200 text-left cursor-pointer ${
+                    className={`relative flex-1 flex items-center justify-center gap-1.5 px-2 py-2 rounded-lg text-xs font-medium transition-all duration-200 cursor-pointer ${
                       isSelected
-                        ? 'border-primary/30 bg-primary/5'
-                        : 'border-border/50 bg-card hover:bg-hover-bg hover:border-border'
+                        ? 'bg-menu-selected text-primary shadow-sm'
+                        : 'text-body2 hover:text-title hover:bg-hover-bg'
                     }`}
                   >
-                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5 ${
-                      isSelected ? 'bg-primary/10' : 'bg-card-alt'
-                    }`}>
-                      <StyleIcon className={`w-4 h-4 ${isSelected ? 'text-primary' : 'text-subtitle'}`} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between">
-                        <span className={`text-sm font-medium ${isSelected ? 'text-title' : 'text-body2'}`}>
-                          {style.label}
-                        </span>
-                        {isSelected && <Check className="w-4 h-4 text-primary flex-shrink-0" />}
-                      </div>
-                      <p className="text-xs text-subtitle mt-0.5 leading-relaxed">{style.desc}</p>
-                    </div>
+                    <StyleIcon className="w-3.5 h-3.5" />
+                    <span className="whitespace-nowrap">{style.label}</span>
                   </button>
                 );
               })}
             </div>
+            {/* Selected style description */}
+            <p className="text-xs text-subtitle text-center px-2 leading-relaxed">
+              {WRITING_STYLES.find(s => s.id === selectedStyle)?.desc}
+            </p>
           </motion.div>
 
           {/* Input area */}
