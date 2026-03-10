@@ -92,6 +92,7 @@ const Index = () => {
           updateSession(sessionId, s => ({
             ...s,
             stage: 'COMPLETED',
+            researchEndTime: Date.now(),
             thoughts: [...s.thoughts, {
               id: `done-${Date.now()}`,
               type: 'writing' as const,
