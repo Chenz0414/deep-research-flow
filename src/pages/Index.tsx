@@ -4,7 +4,7 @@ import { startStream } from '@/hooks/useSSE';
 import { AppSidebar } from '@/components/deep-research/AppSidebar';
 import { WelcomeView } from '@/components/deep-research/WelcomeView';
 import { RightPanel } from '@/components/deep-research/RightPanel';
-import { AgentPanel } from '@/components/deep-research/AgentPanel';
+import { ResearchProcessView } from '@/components/deep-research/ResearchProcessView';
 import type { Stage, ThoughtItem, MessageItem, ApiMessage, ResearchRound } from '@/types/deep-research';
 import type { ResearchSession } from '@/types/research-session';
 
@@ -238,18 +238,23 @@ const Index = () => {
               stage={activeSession.stage}
               planText={activeSession.planText}
               reportMarkdown={activeSession.reportMarkdown}
-              researchRounds={activeSession.researchRounds}
               onEditPlan={handleEditPlanWithText}
               onStartResearch={handleStartResearch}
             />
           </div>
           {(activeSession.stage === 'RESEARCHING' || activeSession.stage === 'COMPLETED') && (
             <>
-              <div className="hidden sm:block w-[280px] flex-shrink-0">
-                <AgentPanel stage={activeSession.stage} thoughts={activeSession.thoughts} />
+              <div className="hidden sm:block w-[320px] flex-shrink-0 border-l border-border/50 h-full">
+                <ResearchProcessView
+                  rounds={activeSession.researchRounds}
+                  isResearching={activeSession.stage === 'RESEARCHING'}
+                />
               </div>
               <div className="sm:hidden">
-                <AgentPanel stage={activeSession.stage} thoughts={activeSession.thoughts} />
+                <ResearchProcessView
+                  rounds={activeSession.researchRounds}
+                  isResearching={activeSession.stage === 'RESEARCHING'}
+                />
               </div>
             </>
           )}
