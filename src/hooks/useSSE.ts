@@ -212,6 +212,79 @@ async function runMockSSE(
   }
 }
 
+async function runMockResearch(
+  cb: SSECallbacks,
+  signal: AbortSignal,
+) {
+  // Initial thinking thoughts
+  const thinkingSteps = [
+    { type: 'thinking' as const, content: '开始执行深度研究...', delay: 500 },
+    { type: 'planning' as const, content: '规划研究轮次...', delay: 400 },
+  ];
+
+  for (const step of thinkingSteps) {
+    if (signal.aborted) return;
+    await new Promise(r => setTimeout(r, step.delay));
+    if (signal.aborted) return;
+    cb.onThought({
+      id: `${step.type}-${Date.now()}-${Math.random()}`,
+      type: step.type,
+      content: step.content,
+      timestamp: Date.now(),
+    });
+  }
+
+  for (const round of MOCK_RESEARCH_ROUNDS) {
+    if (signal.aborted) return;
+    await new Promise(r => setTimeout(r, round.delay));
+    if (signal.aborted) return;
+
+    const roundId = `round-${Date.now()}-${Math.random()}`;
+
+    if (round.type === 'search') {
+      // Emit search thought
+      cb.onThought({
+        id: `search-${Date.now()}`,
+        type: 'searching',
+        content: round.query || '',
+        timestamp: Date.now(),
+      });
+
+      // Add search round
+      cb.onResearchRound({
+        id: roundId,
+        type: 'search',
+        query: round.query,
+        references: round.references || [],
+        images: round.images || [],
+      });
+    } else {
+      // text or summary - stream chunks
+      const chunks = round.textChunks || [];
+      cb.onResearchRound({
+        id: roundId,
+        type: round.type,
+        content: '',
+        isStreaming: true,
+      });
+
+      let acc = '';
+      for (const chunk of chunks) {
+        if (signal.aborted) return;
+        await new Promise(r => setTimeout(r, 60));
+        if (signal.aborted) return;
+        acc += chunk;
+        cb.onUpdateRound(roundId, r => ({ ...r, content: acc }));
+        // Also emit as regular content for report accumulation
+        cb.onContent(chunk);
+      }
+      cb.onUpdateRound(roundId, r => ({ ...r, isStreaming: false }));
+    }
+  }
+
+  cb.onComplete('mock-report-001');
+}
+
 async function runRealSSE(
   messages: ApiMessage[],
   params: SendParams,
