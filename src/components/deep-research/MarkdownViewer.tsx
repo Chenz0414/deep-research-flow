@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 interface MarkdownViewerProps {
   content: string;
   isStreaming: boolean;
+  hideTopBar?: boolean;
 }
 
 export function MarkdownViewer({ content, isStreaming }: MarkdownViewerProps) {
