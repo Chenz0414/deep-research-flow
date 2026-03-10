@@ -185,6 +185,9 @@ const Index = () => {
   const handleStartResearch = useCallback(() => {
     if (!activeSessionId) return;
 
+    // Force right panel visible when research begins
+    setShowRightPanel(true);
+
     setSessions(prev => {
       const session = prev.find(s => s.id === activeSessionId);
       if (!session) return prev;
@@ -217,6 +220,8 @@ const Index = () => {
         researchRounds: [],
         researchProgress: { totalSections: 0, completedSections: 0 },
         isWritingReport: false,
+        researchStartTime: Date.now(),
+        researchEndTime: undefined,
       } : s);
     });
   }, [activeSessionId, startSessionStream]);
