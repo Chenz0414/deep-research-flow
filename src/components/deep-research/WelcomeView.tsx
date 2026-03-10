@@ -74,11 +74,11 @@ export function WelcomeView({ onSend }: WelcomeViewProps) {
   return (
     <div className="h-full overflow-y-auto scrollbar-thin">
       {/* Hero Section */}
-      <section className="flex flex-col items-center justify-center min-h-[85vh] px-8 relative">
-        {/* Background glow */}
+      <section className="flex flex-col items-center justify-center min-h-[85vh] px-4 sm:px-8 relative">
+        {/* Background gradient glow */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[400px] rounded-full opacity-[0.07]"
-            style={{ background: 'radial-gradient(circle, hsl(var(--primary)), transparent 70%)' }} />
+          <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[500px] h-[350px] rounded-full opacity-[0.06]"
+            style={{ background: 'radial-gradient(circle, hsl(var(--gradient-from)), hsl(var(--gradient-to)) 60%, transparent 80%)' }} />
         </div>
 
         <motion.div
@@ -93,60 +93,60 @@ export function WelcomeView({ onSend }: WelcomeViewProps) {
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="w-16 h-16 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto glow-sm"
+              className="w-16 h-16 rounded-2xl gradient-primary flex items-center justify-center mx-auto glow-sm"
             >
-              <Sparkles className="w-8 h-8 text-primary" />
+              <Sparkles className="w-8 h-8 text-white" />
             </motion.div>
             <div className="space-y-3">
-              <h1 className="text-4xl font-bold tracking-tight text-gradient-primary leading-tight">
+              <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-gradient-primary leading-tight">
                 DeepFlow
               </h1>
-              <p className="text-lg text-muted-foreground leading-relaxed max-w-lg mx-auto">
+              <p className="text-base sm:text-lg text-subtitle leading-relaxed max-w-lg mx-auto">
                 AI 驱动的深度研究助手，自动生成调研计划并执行多维分析，输出专业研究报告
               </p>
             </div>
           </div>
 
           {/* Features */}
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {FEATURES.map((f, i) => (
               <motion.div
                 key={i}
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 + i * 0.1, duration: 0.5 }}
-                className="text-center p-5 rounded-xl glass-panel surface-interactive cursor-default"
+                className="text-center p-5 rounded-xl bg-card-alt border border-border/50 surface-interactive"
               >
                 <div className="w-10 h-10 rounded-xl bg-primary/8 flex items-center justify-center mx-auto mb-3">
                   <f.icon className="w-5 h-5 text-primary" />
                 </div>
-                <p className="text-sm font-semibold text-foreground mb-1">{f.title}</p>
-                <p className="text-xs text-muted-foreground leading-relaxed">{f.desc}</p>
+                <p className="text-sm font-semibold text-title mb-1">{f.title}</p>
+                <p className="text-xs text-subtitle leading-relaxed">{f.desc}</p>
               </motion.div>
             ))}
           </div>
 
-          {/* Input area with inline mode selector */}
+          {/* Input area */}
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5, duration: 0.5 }}
             className="relative group"
           >
-            <div className="absolute -inset-px rounded-xl bg-primary/10 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 blur-sm" />
-            <div className="relative glass-panel rounded-xl overflow-hidden glow-sm">
+            <div className="absolute -inset-px rounded-xl gradient-primary opacity-0 group-focus-within:opacity-20 transition-opacity duration-300 blur-sm" />
+            <div className="relative bg-card rounded-xl border border-border/60 overflow-hidden glow-sm">
               <Textarea
                 ref={textareaRef}
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder="输入您的研究主题，例如：人工智能在医疗领域的应用前景..."
-                className="pr-14 min-h-[100px] max-h-[180px] resize-none text-sm border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
+                className="pr-14 min-h-[100px] max-h-[180px] resize-none text-sm border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-subtitle"
                 rows={3}
               />
-              {/* Bottom bar: mode selector + send */}
+              {/* Bottom bar */}
               <div className="flex items-center justify-between px-3 pb-3">
-                <div className="flex items-center gap-1 bg-muted/40 rounded-lg p-0.5">
+                <div className="flex items-center gap-0.5 bg-card-alt rounded-lg p-0.5">
                   {SEARCH_MODES.map((mode) => {
                     const ModeIcon = mode.icon;
                     const isSelected = selectedStep === mode.step;
@@ -154,15 +154,15 @@ export function WelcomeView({ onSend }: WelcomeViewProps) {
                       <button
                         key={mode.step}
                         onClick={() => setSelectedStep(mode.step)}
-                        className={`relative flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[11px] font-medium transition-all duration-200 ${
+                        className={`relative flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[11px] font-medium transition-all duration-200 cursor-pointer ${
                           isSelected
-                            ? 'bg-background text-primary shadow-sm'
-                            : 'text-muted-foreground hover:text-foreground'
+                            ? 'bg-menu-selected text-primary shadow-sm'
+                            : 'text-body2 hover:text-title hover:bg-hover-bg'
                         }`}
                       >
                         <ModeIcon className="w-3 h-3" />
                         <span>{mode.label}</span>
-                        <span className={`text-[9px] ${isSelected ? 'text-primary/60' : 'text-muted-foreground/50'}`}>
+                        <span className={`text-[9px] ${isSelected ? 'text-primary/60' : 'text-subtitle'}`}>
                           {mode.cost}
                         </span>
                       </button>
@@ -173,7 +173,7 @@ export function WelcomeView({ onSend }: WelcomeViewProps) {
                   size="icon"
                   onClick={handleSubmit}
                   disabled={!input.trim()}
-                  className="h-8 w-8 rounded-lg shadow-sm"
+                  className="h-8 w-8 rounded-lg gradient-primary border-0 text-white hover:opacity-90 transition-opacity"
                 >
                   <Send className="w-3.5 h-3.5" />
                 </Button>
@@ -186,7 +186,7 @@ export function WelcomeView({ onSend }: WelcomeViewProps) {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.7, duration: 0.5 }}
-            className="grid grid-cols-2 gap-2"
+            className="grid grid-cols-1 sm:grid-cols-2 gap-2"
           >
             {QUICK_TOPICS.map((topic, i) => {
               const TopicIcon = topic.icon;
@@ -197,15 +197,15 @@ export function WelcomeView({ onSend }: WelcomeViewProps) {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.75 + i * 0.06 }}
                   onClick={() => onSend(topic.text, selectedStep)}
-                  className="group/topic flex items-center gap-3 px-4 py-3 rounded-xl border border-border/40 bg-card/40 hover:bg-primary/5 hover:border-primary/20 transition-all duration-200 text-left"
+                  className="group/topic flex items-center gap-3 px-4 py-3 rounded-xl border border-border/50 bg-card hover:bg-hover-bg hover:border-primary/20 transition-all duration-200 text-left cursor-pointer"
                 >
                   <div className="w-7 h-7 rounded-lg bg-primary/8 flex items-center justify-center flex-shrink-0 group-hover/topic:bg-primary/12 transition-colors">
                     <TopicIcon className="w-3.5 h-3.5 text-primary/60 group-hover/topic:text-primary transition-colors" />
                   </div>
-                  <span className="text-xs text-foreground/70 group-hover/topic:text-foreground transition-colors flex-1 line-clamp-1">
+                  <span className="text-xs text-body2 group-hover/topic:text-title transition-colors flex-1 line-clamp-1">
                     {topic.text}
                   </span>
-                  <ArrowRight className="w-3 h-3 text-muted-foreground/30 group-hover/topic:text-primary/50 group-hover/topic:translate-x-0.5 transition-all flex-shrink-0" />
+                  <ArrowRight className="w-3 h-3 text-subtitle group-hover/topic:text-primary/60 group-hover/topic:translate-x-0.5 transition-all flex-shrink-0" />
                 </motion.button>
               );
             })}
@@ -219,27 +219,27 @@ export function WelcomeView({ onSend }: WelcomeViewProps) {
           transition={{ delay: 1.5 }}
           className="absolute bottom-8"
         >
-          <ChevronDown className="w-5 h-5 text-muted-foreground animate-bounce" />
+          <ChevronDown className="w-5 h-5 text-subtitle animate-bounce" />
         </motion.div>
       </section>
 
       {/* Capabilities Section */}
-      <section className="py-20 px-8">
+      <section className="py-16 sm:py-20 px-4 sm:px-8">
         <div className="max-w-4xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.6 }}
-            className="text-center mb-14"
+            className="text-center mb-12 sm:mb-14"
           >
-            <h2 className="text-2xl font-bold text-foreground mb-3">为什么选择 DeepFlow</h2>
-            <p className="text-sm text-muted-foreground max-w-md mx-auto">
+            <h2 className="text-xl sm:text-2xl font-bold text-title mb-3">为什么选择 DeepFlow</h2>
+            <p className="text-sm text-subtitle max-w-md mx-auto">
               强大的 AI 能力赋予您专业研究员级别的调研效率
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-2 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
             {CAPABILITIES.map((cap, i) => (
               <motion.div
                 key={i}
@@ -247,13 +247,13 @@ export function WelcomeView({ onSend }: WelcomeViewProps) {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-50px" }}
                 transition={{ delay: i * 0.1, duration: 0.5 }}
-                className="p-6 rounded-xl glass-panel surface-interactive"
+                className="p-6 rounded-xl bg-card border border-border/50 surface-interactive"
               >
                 <div className="w-10 h-10 rounded-xl bg-primary/8 flex items-center justify-center mb-4">
                   <cap.icon className="w-5 h-5 text-primary" />
                 </div>
-                <h3 className="text-sm font-semibold text-foreground mb-2">{cap.title}</h3>
-                <p className="text-xs text-muted-foreground leading-relaxed">{cap.desc}</p>
+                <h3 className="text-sm font-semibold text-title mb-2">{cap.title}</h3>
+                <p className="text-xs text-subtitle leading-relaxed">{cap.desc}</p>
               </motion.div>
             ))}
           </div>
@@ -261,22 +261,22 @@ export function WelcomeView({ onSend }: WelcomeViewProps) {
       </section>
 
       {/* Testimonials Section */}
-      <section className="py-20 px-8 border-t border-border/40">
+      <section className="py-16 sm:py-20 px-4 sm:px-8 border-t border-border/40">
         <div className="max-w-4xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.6 }}
-            className="text-center mb-14"
+            className="text-center mb-12 sm:mb-14"
           >
-            <h2 className="text-2xl font-bold text-foreground mb-3">用户评价</h2>
-            <p className="text-sm text-muted-foreground max-w-md mx-auto">
+            <h2 className="text-xl sm:text-2xl font-bold text-title mb-3">用户评价</h2>
+            <p className="text-sm text-subtitle max-w-md mx-auto">
               来自各行业用户的真实反馈
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5">
             {TESTIMONIALS.map((t, i) => (
               <motion.div
                 key={i}
@@ -284,24 +284,24 @@ export function WelcomeView({ onSend }: WelcomeViewProps) {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-50px" }}
                 transition={{ delay: i * 0.12, duration: 0.5 }}
-                className="p-6 rounded-xl glass-panel"
+                className="p-6 rounded-xl bg-card border border-border/50"
               >
                 <div className="flex items-center gap-1 mb-4">
                   {Array.from({ length: t.rating }).map((_, j) => (
-                    <Star key={j} className="w-3.5 h-3.5 fill-primary text-primary" />
+                    <Star key={j} className="w-3.5 h-3.5 fill-theme-accent text-theme-accent" />
                   ))}
                 </div>
-                <p className="text-sm text-foreground/80 leading-relaxed mb-5">
+                <p className="text-sm text-body2 leading-relaxed mb-5">
                   <MessageSquare className="w-4 h-4 text-primary/30 inline mr-1 -mt-0.5" />
                   {t.content}
                 </p>
                 <div className="flex items-center gap-3 pt-4 border-t border-border/40">
-                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-xs font-semibold text-primary">
+                  <div className="w-8 h-8 rounded-full gradient-primary flex items-center justify-center text-xs font-semibold text-white">
                     {t.avatar}
                   </div>
                   <div>
-                    <p className="text-xs font-semibold text-foreground">{t.name}</p>
-                    <p className="text-[11px] text-muted-foreground">{t.role}</p>
+                    <p className="text-xs font-semibold text-title">{t.name}</p>
+                    <p className="text-[11px] text-subtitle">{t.role}</p>
                   </div>
                 </div>
               </motion.div>
@@ -311,17 +311,17 @@ export function WelcomeView({ onSend }: WelcomeViewProps) {
       </section>
 
       {/* FAQ Section */}
-      <section className="py-20 px-8 border-t border-border/40">
+      <section className="py-16 sm:py-20 px-4 sm:px-8 border-t border-border/40">
         <div className="max-w-2xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.6 }}
-            className="text-center mb-14"
+            className="text-center mb-12 sm:mb-14"
           >
-            <h2 className="text-2xl font-bold text-foreground mb-3">常见问题</h2>
-            <p className="text-sm text-muted-foreground max-w-md mx-auto">
+            <h2 className="text-xl sm:text-2xl font-bold text-title mb-3">常见问题</h2>
+            <p className="text-sm text-subtitle max-w-md mx-auto">
               关于 DeepFlow 您可能想了解的
             </p>
           </motion.div>
@@ -337,17 +337,17 @@ export function WelcomeView({ onSend }: WelcomeViewProps) {
               >
                 <button
                   onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                  className="w-full text-left p-5 rounded-xl glass-panel surface-interactive"
+                  className="w-full text-left p-5 rounded-xl bg-card border border-border/50 surface-interactive"
                 >
                   <div className="flex items-center justify-between">
-                    <h3 className="text-sm font-semibold text-foreground pr-4">{faq.q}</h3>
-                    <ChevronDown className={`w-4 h-4 text-muted-foreground flex-shrink-0 transition-transform duration-200 ${openFaq === i ? 'rotate-180' : ''}`} />
+                    <h3 className="text-sm font-semibold text-title pr-4">{faq.q}</h3>
+                    <ChevronDown className={`w-4 h-4 text-subtitle flex-shrink-0 transition-transform duration-200 ${openFaq === i ? 'rotate-180' : ''}`} />
                   </div>
                   {openFaq === i && (
                     <motion.p
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: 'auto' }}
-                      className="text-sm text-muted-foreground leading-relaxed mt-3 pt-3 border-t border-border/40"
+                      className="text-sm text-body2 leading-relaxed mt-3 pt-3 border-t border-border/40"
                     >
                       {faq.a}
                     </motion.p>
@@ -360,8 +360,8 @@ export function WelcomeView({ onSend }: WelcomeViewProps) {
       </section>
 
       {/* Footer */}
-      <footer className="py-10 px-8 border-t border-border/40 text-center">
-        <p className="text-xs text-muted-foreground">
+      <footer className="py-10 px-4 sm:px-8 border-t border-border/40 text-center">
+        <p className="text-xs text-subtitle">
           © 2024 DeepFlow. AI 驱动的深度研究助手。
         </p>
       </footer>

@@ -20,38 +20,29 @@ const Index = () => {
   const [activeSessionId, setActiveSessionId] = useState<string | undefined>();
   const { toast } = useToast();
 
-  // Per-session abort controllers and content accumulators
   const abortsRef = useRef<Map<string, () => void>>(new Map());
   const planAccs = useRef<Map<string, string>>(new Map());
   const reportAccs = useRef<Map<string, string>>(new Map());
 
-  // Helper: update a specific session in the array
   const updateSession = useCallback((id: string, updater: (s: ResearchSession) => ResearchSession) => {
     setSessions(prev => prev.map(s => s.id === id ? updater(s) : s));
   }, []);
 
-  // Get current active session from state
   const getActiveSession = useCallback((): ResearchSession | undefined => {
-    // We read from sessions via the setter to get latest
     let found: ResearchSession | undefined;
     setSessions(prev => {
       found = prev.find(s => s.id === activeSessionId);
-      return prev; // no mutation
+      return prev;
     });
     return found;
   }, [activeSessionId]);
 
-  /**
-   * Start an SSE stream for a specific session.
-   * All callbacks are bound to the sessionId via closure — completely independent of activeSessionId.
-   */
   const startSessionStream = useCallback((
     sessionId: string,
     messages: ApiMessage[],
     params: Parameters<typeof startStream>[1],
     streamPhase: 'plan' | 'research',
   ) => {
-    // Abort any existing stream for this session
     abortsRef.current.get(sessionId)?.();
 
     const abort = startStream(messages, params, {
@@ -101,8 +92,6 @@ const Index = () => {
     abortsRef.current.set(sessionId, abort);
   }, [updateSession, toast]);
 
-  // ---- User actions ----
-
   const handleSend = useCallback((message: string, deepSearchStep: number = 2) => {
     const id = crypto.randomUUID();
     const title = message.length > 30 ? message.slice(0, 30) + '...' : message;
@@ -134,18 +123,6 @@ const Index = () => {
     }, 'plan');
   }, [startSessionStream]);
 
-  const handleEditPlan = useCallback(() => {
-    setSessions(prev => {
-      const session = prev.find(s => s.id === activeSessionId);
-      if (!session || session.stage !== 'REVIEWING_PLAN') return prev;
-
-      // We need the session data to construct the edit — read it here
-      const editText = session.planText; // User edits are handled in ResearchPlanCard
-      return prev; // actual edit is triggered below
-    });
-  }, [activeSessionId]);
-
-  // This is called from ResearchPlanCard with the new plan text
   const handleEditPlanWithText = useCallback((newPlan: string) => {
     if (!activeSessionId) return;
 
@@ -161,7 +138,6 @@ const Index = () => {
 
       planAccs.current.set(activeSessionId, '');
 
-      // Start stream outside setState
       setTimeout(() => {
         startSessionStream(activeSessionId, toApiMessages(newHistory), {
           chat_id: CHAT_ID,
@@ -226,7 +202,6 @@ const Index = () => {
     setActiveSessionId(id);
   }, []);
 
-  // Derive active session view from sessions array
   const activeSession = sessions.find(s => s.id === activeSessionId);
   const stage: Stage = activeSession?.stage ?? 'IDLE';
   const isActive = stage !== 'IDLE' && !!activeSession;
@@ -253,7 +228,11 @@ const Index = () => {
               onStartResearch={handleStartResearch}
             />
           </div>
-          <div className="w-[280px] flex-shrink-0">
+          <div className="hidden sm:block w-[280px] flex-shrink-0">
+            <AgentPanel stage={activeSession.stage} thoughts={activeSession.thoughts} />
+          </div>
+          {/* Mobile agent panel is rendered inside AgentPanel as fixed bottom sheet */}
+          <div className="sm:hidden">
             <AgentPanel stage={activeSession.stage} thoughts={activeSession.thoughts} />
           </div>
         </>
