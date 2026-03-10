@@ -61,6 +61,7 @@ export function WelcomeView({ onSend }: WelcomeViewProps) {
   const [selectedStyle, setSelectedStyle] = useState('academic');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [hoveredStyle, setHoveredStyle] = useState<string | null>(null);
 
   useEffect(() => {
     textareaRef.current?.focus();
@@ -121,17 +122,20 @@ export function WelcomeView({ onSend }: WelcomeViewProps) {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.25, duration: 0.5 }}
-            className="space-y-1.5"
           >
-            <p className="text-xs font-medium text-subtitle tracking-wide text-center">研究类型</p>
-            <div className="relative flex items-center gap-1.5 bg-card-alt rounded-xl p-1 border border-border/50">
+            <div className="relative flex items-center gap-1.5 bg-card-alt rounded-xl p-1 border border-border/50"
+              onMouseLeave={() => setHoveredStyle(null)}
+            >
               {WRITING_STYLES.map((style) => {
                 const StyleIcon = style.icon;
                 const isSelected = selectedStyle === style.id;
+                const activeTooltipId = hoveredStyle || selectedStyle;
+                const showTooltip = style.id === activeTooltipId;
                 return (
-                  <div key={style.id} className="relative flex-1 group/style">
+                  <div key={style.id} className="relative flex-1">
                     <button
                       onClick={() => setSelectedStyle(style.id)}
+                      onMouseEnter={() => setHoveredStyle(style.id)}
                       className={`w-full flex items-center justify-center gap-1.5 px-2 py-2 rounded-lg text-xs font-medium transition-all duration-200 cursor-pointer ${
                         isSelected
                           ? 'bg-menu-selected text-primary shadow-sm'
@@ -141,13 +145,13 @@ export function WelcomeView({ onSend }: WelcomeViewProps) {
                       <StyleIcon className="w-3.5 h-3.5" />
                       <span className="whitespace-nowrap">{style.label}</span>
                     </button>
-                    {/* Tooltip */}
-                    <div className={`absolute left-1/2 -translate-x-1/2 bottom-full mb-2 px-3 py-1.5 rounded-lg bg-popover border border-border/60 shadow-lg text-[11px] text-subtitle leading-relaxed whitespace-nowrap z-50 pointer-events-none transition-opacity duration-150 ${
-                      isSelected ? 'opacity-100 group-hover/style:opacity-100' : 'opacity-0 group-hover/style:opacity-100'
-                    }`}>
-                      {style.desc}
-                      <div className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-x-[5px] border-x-transparent border-t-[5px] border-t-border/60" />
-                    </div>
+                    {/* Tooltip - left aligned to tab */}
+                    {showTooltip && (
+                      <div className="absolute left-0 bottom-full mb-2 px-3 py-1.5 rounded-lg bg-popover border border-border/60 shadow-lg text-[11px] text-subtitle leading-relaxed whitespace-nowrap z-50 pointer-events-none">
+                        {style.desc}
+                        <div className="absolute left-4 top-full w-0 h-0 border-x-[5px] border-x-transparent border-t-[5px] border-t-border/60" />
+                      </div>
+                    )}
                   </div>
                 );
               })}
