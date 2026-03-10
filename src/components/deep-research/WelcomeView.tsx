@@ -99,14 +99,6 @@ export function WelcomeView({ onSend }: WelcomeViewProps) {
         >
           {/* Hero */}
           <div className="text-center space-y-5">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              className="w-16 h-16 rounded-2xl gradient-primary flex items-center justify-center mx-auto glow-sm"
-            >
-              <Sparkles className="w-8 h-8 text-white" />
-            </motion.div>
             <div className="space-y-3">
               <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-gradient-primary leading-tight">
                 深度研究
