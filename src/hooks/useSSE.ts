@@ -10,6 +10,8 @@ function generateKey(): string {
 export interface SSECallbacks {
   onThought: (thought: ThoughtItem) => void;
   onContent: (chunk: string) => void;
+  onResearchRound: (round: ResearchRound) => void;
+  onUpdateRound: (roundId: string, updater: (r: ResearchRound) => ResearchRound) => void;
   onComplete: (messageId?: string) => void;
   onError: (error: string) => void;
 }
