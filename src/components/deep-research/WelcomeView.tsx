@@ -322,7 +322,7 @@ export function WelcomeView({ onSend }: WelcomeViewProps) {
           >
             <h2 className="text-xl sm:text-2xl font-bold text-title mb-3">常见问题</h2>
             <p className="text-sm text-subtitle max-w-md mx-auto">
-              关于 DeepFlow 您可能想了解的
+              关于深度研究您可能想了解的
             </p>
           </motion.div>
 
