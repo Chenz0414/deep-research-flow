@@ -215,6 +215,8 @@ const Index = () => {
         thoughts: [],
         reportMarkdown: '',
         researchRounds: [],
+        researchProgress: { totalSections: 0, completedSections: 0 },
+        isWritingReport: false,
       } : s);
     });
   }, [activeSessionId, startSessionStream]);
