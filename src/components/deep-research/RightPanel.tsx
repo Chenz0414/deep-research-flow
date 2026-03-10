@@ -29,6 +29,7 @@ export function RightPanel({
   onEditPlan, onStartResearch, isLoading,
   onToggleRightPanel, rightPanelVisible,
   researchProgress, isWritingReport,
+  researchStartTime, researchEndTime,
 }: RightPanelProps) {
   const isResearching = stage === 'RESEARCHING';
   const isCompleted = stage === 'COMPLETED';
