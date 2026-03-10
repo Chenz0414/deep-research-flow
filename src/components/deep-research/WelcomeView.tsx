@@ -62,6 +62,7 @@ export function WelcomeView({ onSend }: WelcomeViewProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [hoveredStyle, setHoveredStyle] = useState<string | null>(null);
+  const activeTooltipStyle = WRITING_STYLES.find((style) => style.id === (hoveredStyle || selectedStyle)) ?? WRITING_STYLES[0];
 
   useEffect(() => {
     textareaRef.current?.focus();
