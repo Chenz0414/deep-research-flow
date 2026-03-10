@@ -121,8 +121,9 @@ export function WelcomeView({ onSend }: WelcomeViewProps) {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.25, duration: 0.5 }}
-            className="space-y-2"
+            className="space-y-2.5"
           >
+            <p className="text-xs font-medium text-subtitle tracking-wide text-center">研究类型</p>
             <div className="flex items-center gap-1.5 bg-card-alt rounded-xl p-1 border border-border/50">
               {WRITING_STYLES.map((style) => {
                 const StyleIcon = style.icon;
