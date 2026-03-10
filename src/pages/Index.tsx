@@ -106,6 +106,7 @@ const Index = () => {
       messageHistory: newHistory,
       planText: '',
       reportMarkdown: '',
+      researchRounds: [],
       deepSearchStep,
     };
 
