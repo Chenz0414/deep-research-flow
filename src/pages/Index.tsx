@@ -92,6 +92,7 @@ const Index = () => {
           updateSession(sessionId, s => ({
             ...s,
             stage: 'COMPLETED',
+            researchEndTime: Date.now(),
             thoughts: [...s.thoughts, {
               id: `done-${Date.now()}`,
               type: 'writing' as const,
@@ -185,6 +186,9 @@ const Index = () => {
   const handleStartResearch = useCallback(() => {
     if (!activeSessionId) return;
 
+    // Force right panel visible when research begins
+    setShowRightPanel(true);
+
     setSessions(prev => {
       const session = prev.find(s => s.id === activeSessionId);
       if (!session) return prev;
@@ -217,6 +221,8 @@ const Index = () => {
         researchRounds: [],
         researchProgress: { totalSections: 0, completedSections: 0 },
         isWritingReport: false,
+        researchStartTime: Date.now(),
+        researchEndTime: undefined,
       } : s);
     });
   }, [activeSessionId, startSessionStream]);
@@ -278,6 +284,8 @@ const Index = () => {
                 rightPanelVisible={showRightPanel}
                 researchProgress={activeSession.researchProgress}
                 isWritingReport={activeSession.isWritingReport}
+                researchStartTime={activeSession.researchStartTime}
+                researchEndTime={activeSession.researchEndTime}
               />
             </div>
             {(activeSession.stage === 'RESEARCHING' || activeSession.stage === 'COMPLETED') && showRightPanel && (

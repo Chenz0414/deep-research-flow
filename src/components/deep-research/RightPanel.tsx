@@ -20,6 +20,8 @@ interface RightPanelProps {
   rightPanelVisible?: boolean;
   researchProgress?: ResearchProgress;
   isWritingReport?: boolean;
+  researchStartTime?: number;
+  researchEndTime?: number;
 }
 
 export function RightPanel({
@@ -27,6 +29,7 @@ export function RightPanel({
   onEditPlan, onStartResearch, isLoading,
   onToggleRightPanel, rightPanelVisible,
   researchProgress, isWritingReport,
+  researchStartTime, researchEndTime,
 }: RightPanelProps) {
   const isResearching = stage === 'RESEARCHING';
   const isCompleted = stage === 'COMPLETED';
@@ -79,6 +82,8 @@ export function RightPanel({
                 progress={researchProgress ?? { totalSections: 0, completedSections: 0 }}
                 onToggleRightPanel={onToggleRightPanel || (() => {})}
                 rightPanelVisible={rightPanelVisible ?? true}
+                startTime={researchStartTime}
+                endTime={researchEndTime}
               />
 
               {/* Report - only after research rounds complete */}
