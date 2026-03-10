@@ -20,6 +20,8 @@ interface RightPanelProps {
   rightPanelVisible?: boolean;
   researchProgress?: ResearchProgress;
   isWritingReport?: boolean;
+  researchStartTime?: number;
+  researchEndTime?: number;
 }
 
 export function RightPanel({
