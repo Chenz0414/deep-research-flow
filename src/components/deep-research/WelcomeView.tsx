@@ -116,6 +116,47 @@ export function WelcomeView({ onSend }: WelcomeViewProps) {
             </div>
           </div>
 
+          {/* Writing Style Selector */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.25, duration: 0.5 }}
+            className="space-y-2"
+          >
+            <div className="space-y-1.5">
+              {WRITING_STYLES.map((style) => {
+                const StyleIcon = style.icon;
+                const isSelected = selectedStyle === style.id;
+                return (
+                  <button
+                    key={style.id}
+                    onClick={() => setSelectedStyle(style.id)}
+                    className={`w-full flex items-start gap-3 px-4 py-3 rounded-xl border transition-all duration-200 text-left cursor-pointer ${
+                      isSelected
+                        ? 'border-primary/30 bg-primary/5'
+                        : 'border-border/50 bg-card hover:bg-hover-bg hover:border-border'
+                    }`}
+                  >
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5 ${
+                      isSelected ? 'bg-primary/10' : 'bg-card-alt'
+                    }`}>
+                      <StyleIcon className={`w-4 h-4 ${isSelected ? 'text-primary' : 'text-subtitle'}`} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between">
+                        <span className={`text-sm font-medium ${isSelected ? 'text-title' : 'text-body2'}`}>
+                          {style.label}
+                        </span>
+                        {isSelected && <Check className="w-4 h-4 text-primary flex-shrink-0" />}
+                      </div>
+                      <p className="text-xs text-subtitle mt-0.5 leading-relaxed">{style.desc}</p>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </motion.div>
+
           {/* Input area */}
           <motion.div
             initial={{ opacity: 0, y: 12 }}
