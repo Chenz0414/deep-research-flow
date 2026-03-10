@@ -203,6 +203,7 @@ const Index = () => {
         messageHistory: newHistory,
         thoughts: [],
         reportMarkdown: '',
+        researchRounds: [],
       } : s);
     });
   }, [activeSessionId, startSessionStream]);
