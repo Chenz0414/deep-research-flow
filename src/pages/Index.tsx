@@ -4,7 +4,7 @@ import { startStream } from '@/hooks/useSSE';
 import { AppSidebar } from '@/components/deep-research/AppSidebar';
 import { WelcomeView } from '@/components/deep-research/WelcomeView';
 import { RightPanel } from '@/components/deep-research/RightPanel';
-import { AgentPanel } from '@/components/deep-research/AgentPanel';
+import { ResearchProcessView } from '@/components/deep-research/ResearchProcessView';
 import type { Stage, ThoughtItem, MessageItem, ApiMessage, ResearchRound } from '@/types/deep-research';
 import type { ResearchSession } from '@/types/research-session';
 
