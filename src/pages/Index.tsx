@@ -299,7 +299,7 @@ const Index = () => {
               />
             </div>
             {(activeSession.stage === 'RESEARCHING' || activeSession.stage === 'COMPLETED') && showRightPanel && (
-              <div className="hidden sm:block w-[480px] flex-shrink-0 border-l border-border/50">
+              <div className="hidden lg:block w-[480px] flex-shrink-0 border-l border-border/50">
                 <ResearchProcessView
                   rounds={activeSession.researchRounds}
                   isResearching={activeSession.stage === 'RESEARCHING'}
