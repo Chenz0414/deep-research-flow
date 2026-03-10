@@ -155,17 +155,15 @@ export function AppSidebar({ sessions, activeSessionId, onNewResearch, onSelectS
         </div>
       )}
 
-      {/* Desktop: collapsed state → expand button */}
+      {/* Desktop: collapsed state → floating icon */}
       {collapsed && (
-        <div className="hidden sm:flex h-full flex-col items-center py-4 px-1.5 border-r border-border/50 bg-card">
-          <button
-            onClick={() => setCollapsed(false)}
-            className="p-2 rounded-lg hover:bg-hover-bg transition-colors cursor-pointer"
-            title="展开侧边栏"
-          >
-            <PanelLeftOpen className="w-4.5 h-4.5 text-subtitle" />
-          </button>
-        </div>
+        <button
+          onClick={() => setCollapsed(false)}
+          className="hidden sm:flex fixed top-3 left-3 z-10 p-2 rounded-2xl bg-muted hover:bg-hover-bg transition-colors cursor-pointer"
+          title="展开侧边栏"
+        >
+          <Menu className="w-5 h-5 text-subtitle" />
+        </button>
       )}
 
       {/* Desktop: expanded sidebar */}
