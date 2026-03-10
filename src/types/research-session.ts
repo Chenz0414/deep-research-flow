@@ -23,4 +23,8 @@ export interface ResearchSession {
   /** True when all research rounds are done and report is being written */
   isWritingReport: boolean;
   deepSearchStep: number;
+  /** Timestamp when research phase started */
+  researchStartTime?: number;
+  /** Timestamp when research completed */
+  researchEndTime?: number;
 }
