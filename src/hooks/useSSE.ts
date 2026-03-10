@@ -220,7 +220,7 @@ async function runMockResearch(
   cb: SSECallbacks,
   signal: AbortSignal,
 ) {
-  // Initial thinking thoughts
+  // Initial thinking
   const thinkingSteps = [
     { type: 'thinking' as const, content: '开始执行深度研究...', delay: 500 },
     { type: 'planning' as const, content: '规划研究轮次...', delay: 400 },
@@ -238,23 +238,28 @@ async function runMockResearch(
     });
   }
 
+  // Count text rounds as sections for progress (search+text pairs)
+  const textRounds = MOCK_RESEARCH_ROUNDS.filter(r => r.type === 'text');
+  const totalSections = textRounds.length;
+  let completedSections = 0;
+
+  cb.onProgressUpdate({ totalSections, completedSections });
+
   for (const round of MOCK_RESEARCH_ROUNDS) {
     if (signal.aborted) return;
+    if (round.type === 'summary') continue; // summary handled in report phase
     await new Promise(r => setTimeout(r, round.delay));
     if (signal.aborted) return;
 
     const roundId = `round-${Date.now()}-${Math.random()}`;
 
     if (round.type === 'search') {
-      // Emit search thought
       cb.onThought({
         id: `search-${Date.now()}`,
         type: 'searching',
         content: round.query || '',
         timestamp: Date.now(),
       });
-
-      // Add search round
       cb.onResearchRound({
         id: roundId,
         type: 'search',
@@ -262,8 +267,8 @@ async function runMockResearch(
         references: round.references || [],
         images: round.images || [],
       });
-    } else {
-      // text or summary - stream chunks
+    } else if (round.type === 'text') {
+      // Stream text in right panel
       const chunks = round.textChunks || [];
       cb.onResearchRound({
         id: roundId,
@@ -271,7 +276,6 @@ async function runMockResearch(
         content: '',
         isStreaming: true,
       });
-
       let acc = '';
       for (const chunk of chunks) {
         if (signal.aborted) return;
@@ -279,10 +283,28 @@ async function runMockResearch(
         if (signal.aborted) return;
         acc += chunk;
         cb.onUpdateRound(roundId, r => ({ ...r, content: acc }));
-        // Also emit as regular content for report accumulation
-        cb.onContent(chunk);
       }
       cb.onUpdateRound(roundId, r => ({ ...r, isStreaming: false }));
+
+      completedSections++;
+      const currentSection = textRounds[completedSections]
+        ? undefined
+        : undefined;
+      cb.onProgressUpdate({ totalSections, completedSections });
+    }
+  }
+
+  // Research rounds done — signal to start report writing
+  cb.onResearchDone();
+
+  // Now stream the final report
+  const summaryRound = MOCK_RESEARCH_ROUNDS.find(r => r.type === 'summary');
+  if (summaryRound?.textChunks) {
+    for (const chunk of summaryRound.textChunks) {
+      if (signal.aborted) return;
+      await new Promise(r => setTimeout(r, 60));
+      if (signal.aborted) return;
+      cb.onContent(chunk);
     }
   }
 
