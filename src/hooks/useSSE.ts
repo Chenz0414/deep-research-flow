@@ -1,4 +1,4 @@
-import type { ThoughtItem, ApiMessage } from '@/types/deep-research';
+import type { ThoughtItem, ApiMessage, ResearchRound } from '@/types/deep-research';
 
 const API_URL = 'https://apiv2.wahezu.cn/ai/deep_search/chat';
 const USE_MOCK = true;
@@ -10,6 +10,8 @@ function generateKey(): string {
 export interface SSECallbacks {
   onThought: (thought: ThoughtItem) => void;
   onContent: (chunk: string) => void;
+  onResearchRound: (round: ResearchRound) => void;
+  onUpdateRound: (roundId: string, updater: (r: ResearchRound) => ResearchRound) => void;
   onComplete: (messageId?: string) => void;
   onError: (error: string) => void;
 }
@@ -52,59 +54,113 @@ const MOCK_PLAN_EVENTS = [
   { event: 'user_message', data: { message_id: 'mock-plan-001', file_size_bytes: 2048 }, delay: 200 },
 ];
 
-const MOCK_RESEARCH_EVENTS = [
-  { event: 'thinking', data: { status: '开始执行深度研究...' }, delay: 500 },
-  { event: 'searching', data: { query: '背景与现状分析', step: 1 }, delay: 800 },
-  { event: 'search_result', data: { result: '已检索到 8 篇核心文献' }, delay: 400 },
-  { event: 'searching', data: { query: '技术方案对比分析', step: 2 }, delay: 700 },
-  { event: 'search_result', data: { result: '已获取 15 个技术评测报告' }, delay: 400 },
-  { event: 'writing', data: { status: '正在撰写研究报告...' }, delay: 600 },
-  { event: 'searching', data: { query: '行业案例数据', step: 3 }, delay: 600 },
-  { event: 'search_result', data: { result: '找到 5 个深度案例' }, delay: 300 },
-  { event: 'writing', data: { status: '整合分析结果...' }, delay: 400 },
-  { event: 'content', data: { text: '# 深度研究报告\n\n' }, delay: 120 },
-  { event: 'content', data: { text: '## 摘要\n\n' }, delay: 80 },
-  { event: 'content', data: { text: '本报告基于对多个权威数据源的系统分析，' }, delay: 50 },
-  { event: 'content', data: { text: '深入探讨了该领域的现状、技术发展和未来趋势。' }, delay: 50 },
-  { event: 'content', data: { text: '研究覆盖了 **12 篇核心文献**、**5 个行业案例** 和 **15 份技术评测报告**。\n\n' }, delay: 50 },
-  { event: 'content', data: { text: '---\n\n## 1. 背景与现状分析\n\n' }, delay: 80 },
-  { event: 'content', data: { text: '### 1.1 发展历程\n\n' }, delay: 60 },
-  { event: 'content', data: { text: '该领域的发展可以追溯到 20 世纪末期，经历了以下几个关键阶段：\n\n' }, delay: 50 },
-  { event: 'content', data: { text: '1. **萌芽期（1990-2005）**：基础理论框架的建立和初步技术验证\n' }, delay: 50 },
-  { event: 'content', data: { text: '2. **成长期（2005-2015）**：核心技术突破，商业化应用开始出现\n' }, delay: 50 },
-  { event: 'content', data: { text: '3. **爆发期（2015-至今）**：AI 和大数据技术驱动行业快速迭代\n\n' }, delay: 50 },
-  { event: 'content', data: { text: '### 1.2 市场规模\n\n' }, delay: 60 },
-  { event: 'content', data: { text: '根据最新市场研究数据，2024 年全球市场规模已达到 **$450 亿美元**，' }, delay: 50 },
-  { event: 'content', data: { text: '预计到 2028 年将突破 **$1,200 亿美元**，年复合增长率约 **27.8%**。\n\n' }, delay: 50 },
-  { event: 'content', data: { text: '| 年份 | 市场规模 (亿美元) | 增长率 |\n' }, delay: 40 },
-  { event: 'content', data: { text: '|------|------------------|--------|\n' }, delay: 30 },
-  { event: 'content', data: { text: '| 2022 | 280 | 22.3% |\n' }, delay: 30 },
-  { event: 'content', data: { text: '| 2023 | 350 | 25.0% |\n' }, delay: 30 },
-  { event: 'content', data: { text: '| 2024 | 450 | 28.6% |\n' }, delay: 30 },
-  { event: 'content', data: { text: '| 2025E | 580 | 28.9% |\n\n' }, delay: 30 },
-  { event: 'content', data: { text: '---\n\n## 2. 核心技术与方法论\n\n' }, delay: 80 },
-  { event: 'content', data: { text: '### 2.1 技术架构对比\n\n' }, delay: 60 },
-  { event: 'content', data: { text: '当前主流技术方案可分为三大类：\n\n' }, delay: 50 },
-  { event: 'content', data: { text: '- **方案 A — 端到端模型**：优势在于部署简单、推理速度快，但可解释性较差\n' }, delay: 50 },
-  { event: 'content', data: { text: '- **方案 B — 混合架构**：结合了规则引擎与深度学习，在精度和可控性间取得平衡\n' }, delay: 50 },
-  { event: 'content', data: { text: '- **方案 C — 多智能体系统**：适用于复杂场景，但资源消耗大、调优成本高\n\n' }, delay: 50 },
-  { event: 'content', data: { text: '> 💡 **关键发现**：方案 B 在企业级应用中采用率最高（约 **58%**），' }, delay: 50 },
-  { event: 'content', data: { text: '主要得益于其在安全性和性能之间的优秀平衡。\n\n' }, delay: 50 },
-  { event: 'content', data: { text: '---\n\n## 3. 竞品与案例研究\n\n' }, delay: 80 },
-  { event: 'content', data: { text: '### 案例一：TechCorp 智能平台\n\n' }, delay: 60 },
-  { event: 'content', data: { text: '通过引入多模态融合技术，TechCorp 在 6 个月内将用户留存率提升了 **34%**，' }, delay: 50 },
-  { event: 'content', data: { text: '日活跃用户增长 **120%**。其成功关键在于：\n\n' }, delay: 50 },
-  { event: 'content', data: { text: '- 精准的用户画像构建\n- 实时个性化推荐引擎\n- 无缝的跨端体验设计\n\n' }, delay: 50 },
-  { event: 'content', data: { text: '---\n\n## 4. 挑战与风险\n\n' }, delay: 80 },
-  { event: 'content', data: { text: '- ⚠️ **数据隐私合规**：GDPR 和各国数据保护法规趋严\n' }, delay: 50 },
-  { event: 'content', data: { text: '- ⚠️ **算力成本**：大规模模型训练和推理的基础设施投入持续增长\n' }, delay: 50 },
-  { event: 'content', data: { text: '- ⚠️ **人才缺口**：高端复合型人才供给不足\n\n' }, delay: 50 },
-  { event: 'content', data: { text: '---\n\n## 5. 趋势预测与建议\n\n' }, delay: 80 },
-  { event: 'content', data: { text: '1. **短期（1-2年）**：聚焦场景化落地，优先在高 ROI 业务中验证价值\n' }, delay: 50 },
-  { event: 'content', data: { text: '2. **中期（2-3年）**：构建平台化能力，实现技术资产的复用和沉淀\n' }, delay: 50 },
-  { event: 'content', data: { text: '3. **长期（3-5年）**：探索生态协同，建立行业标准和开放合作机制\n\n' }, delay: 50 },
-  { event: 'content', data: { text: '---\n\n*本报告由 DeepFlowChat 深度研究引擎自动生成，数据截止日期：2026年3月。*\n' }, delay: 80 },
-  { event: 'user_message', data: { message_id: 'mock-report-001', file_size_bytes: 10240 }, delay: 300 },
+const MOCK_RESEARCH_ROUNDS: Array<{
+  type: 'search' | 'text' | 'summary';
+  query?: string;
+  references?: Array<{ title: string; url: string; favicon?: string }>;
+  images?: Array<{ url: string; alt?: string }>;
+  textChunks?: string[];
+  delay: number;
+}> = [
+  // Round 1: search
+  {
+    type: 'search', delay: 800,
+    query: '正在寻找 深度研究主题 背景与现状分析 2026',
+    references: [
+      { title: '行业深度分析报告 2026', url: 'https://example.com/report1', favicon: 'https://www.google.com/s2/favicons?domain=example.com' },
+      { title: 'AI 行业发展现状', url: 'https://example.com/ai-status', favicon: 'https://www.google.com/s2/favicons?domain=example.com' },
+      { title: '市场规模数据统计', url: 'https://example.com/market', favicon: 'https://www.google.com/s2/favicons?domain=example.com' },
+      { title: '技术演进路线图', url: 'https://example.com/tech', favicon: 'https://www.google.com/s2/favicons?domain=example.com' },
+      { title: '全球竞争格局分析', url: 'https://example.com/competition', favicon: 'https://www.google.com/s2/favicons?domain=example.com' },
+      { title: '行业白皮书精选', url: 'https://example.com/whitepaper', favicon: 'https://www.google.com/s2/favicons?domain=example.com' },
+    ],
+    images: [
+      { url: 'https://picsum.photos/seed/r1a/200/160', alt: '行业分析图表' },
+      { url: 'https://picsum.photos/seed/r1b/200/160', alt: '市场趋势' },
+      { url: 'https://picsum.photos/seed/r1c/200/160', alt: '技术对比' },
+    ],
+  },
+  // Round 1: text
+  {
+    type: 'text', delay: 400,
+    textChunks: [
+      '### 1. 背景与现状分析\n\n',
+      '该领域的发展可以追溯到 20 世纪末期，',
+      '经历了**萌芽期、成长期和爆发期**三个关键阶段。',
+      '根据最新数据，2024 年全球市场规模已达到 **$450 亿美元**，',
+      '预计到 2028 年将突破 **$1,200 亿美元**。\n\n',
+      '> 💡 关键发现：AI 驱动的技术迭代是行业增长的核心引擎。\n',
+    ],
+  },
+  // Round 2: search
+  {
+    type: 'search', delay: 600,
+    query: '核心技术与方法论 技术架构对比 2026',
+    references: [
+      { title: 'GPT-5 技术白皮书', url: 'https://example.com/gpt5', favicon: 'https://www.google.com/s2/favicons?domain=openai.com' },
+      { title: 'Gemini 架构分析', url: 'https://example.com/gemini', favicon: 'https://www.google.com/s2/favicons?domain=google.com' },
+      { title: '多模态模型评测', url: 'https://example.com/multimodal', favicon: 'https://www.google.com/s2/favicons?domain=arxiv.org' },
+      { title: '开源 vs 闭源对比', url: 'https://example.com/oss', favicon: 'https://www.google.com/s2/favicons?domain=github.com' },
+    ],
+    images: [
+      { url: 'https://picsum.photos/seed/r2a/200/160', alt: '架构对比' },
+      { url: 'https://picsum.photos/seed/r2b/200/160', alt: '性能评测' },
+    ],
+  },
+  // Round 2: text
+  {
+    type: 'text', delay: 400,
+    textChunks: [
+      '### 2. 核心技术与方法论\n\n',
+      '当前主流技术方案可分为三大类：\n\n',
+      '- **方案 A — 端到端模型**：部署简单、推理速度快\n',
+      '- **方案 B — 混合架构**：精度和可控性间取得平衡\n',
+      '- **方案 C — 多智能体系统**：适用于复杂场景\n\n',
+      '方案 B 在企业级应用中采用率最高（约 **58%**）。\n',
+    ],
+  },
+  // Round 3: search
+  {
+    type: 'search', delay: 600,
+    query: '竞品案例 行业应用场景分析',
+    references: [
+      { title: 'TechCorp 智能平台案例', url: 'https://example.com/techcorp', favicon: 'https://www.google.com/s2/favicons?domain=example.com' },
+      { title: '行业落地实践报告', url: 'https://example.com/practice', favicon: 'https://www.google.com/s2/favicons?domain=example.com' },
+      { title: '用户留存率提升策略', url: 'https://example.com/retention', favicon: 'https://www.google.com/s2/favicons?domain=example.com' },
+    ],
+    images: [
+      { url: 'https://picsum.photos/seed/r3a/200/160', alt: '案例分析' },
+      { url: 'https://picsum.photos/seed/r3b/200/160', alt: '数据对比' },
+      { url: 'https://picsum.photos/seed/r3c/200/160', alt: '用户增长' },
+      { url: 'https://picsum.photos/seed/r3d/200/160', alt: '产品对比' },
+    ],
+  },
+  // Round 3: text
+  {
+    type: 'text', delay: 400,
+    textChunks: [
+      '### 3. 竞品与案例研究\n\n',
+      '通过引入多模态融合技术，TechCorp 在 6 个月内',
+      '将用户留存率提升了 **34%**，日活跃用户增长 **120%**。\n\n',
+      '其成功关键在于：\n',
+      '- 精准的用户画像构建\n',
+      '- 实时个性化推荐引擎\n',
+      '- 无缝的跨端体验设计\n',
+    ],
+  },
+  // Summary
+  {
+    type: 'summary', delay: 800,
+    textChunks: [
+      '# 深度研究总结报告\n\n',
+      '## 核心发现\n\n',
+      '基于对 **12 篇核心文献**、**5 个行业案例** 和 **15 份技术评测** 的系统分析：\n\n',
+      '1. **短期（1-2年）**：聚焦场景化落地，优先在高 ROI 业务中验证价值\n',
+      '2. **中期（2-3年）**：构建平台化能力，实现技术资产的复用和沉淀\n',
+      '3. **长期（3-5年）**：探索生态协同，建立行业标准和开放合作机制\n\n',
+      '---\n\n*本报告由 DeepFlowChat 深度研究引擎自动生成，数据截止日期：2026年3月。*\n',
+    ],
+  },
 ];
 
 const MOCK_EDIT_PLAN_EVENTS = [
@@ -154,6 +210,79 @@ async function runMockSSE(
       cb.onComplete((evt.data as any).message_id);
     }
   }
+}
+
+async function runMockResearch(
+  cb: SSECallbacks,
+  signal: AbortSignal,
+) {
+  // Initial thinking thoughts
+  const thinkingSteps = [
+    { type: 'thinking' as const, content: '开始执行深度研究...', delay: 500 },
+    { type: 'planning' as const, content: '规划研究轮次...', delay: 400 },
+  ];
+
+  for (const step of thinkingSteps) {
+    if (signal.aborted) return;
+    await new Promise(r => setTimeout(r, step.delay));
+    if (signal.aborted) return;
+    cb.onThought({
+      id: `${step.type}-${Date.now()}-${Math.random()}`,
+      type: step.type,
+      content: step.content,
+      timestamp: Date.now(),
+    });
+  }
+
+  for (const round of MOCK_RESEARCH_ROUNDS) {
+    if (signal.aborted) return;
+    await new Promise(r => setTimeout(r, round.delay));
+    if (signal.aborted) return;
+
+    const roundId = `round-${Date.now()}-${Math.random()}`;
+
+    if (round.type === 'search') {
+      // Emit search thought
+      cb.onThought({
+        id: `search-${Date.now()}`,
+        type: 'searching',
+        content: round.query || '',
+        timestamp: Date.now(),
+      });
+
+      // Add search round
+      cb.onResearchRound({
+        id: roundId,
+        type: 'search',
+        query: round.query,
+        references: round.references || [],
+        images: round.images || [],
+      });
+    } else {
+      // text or summary - stream chunks
+      const chunks = round.textChunks || [];
+      cb.onResearchRound({
+        id: roundId,
+        type: round.type,
+        content: '',
+        isStreaming: true,
+      });
+
+      let acc = '';
+      for (const chunk of chunks) {
+        if (signal.aborted) return;
+        await new Promise(r => setTimeout(r, 60));
+        if (signal.aborted) return;
+        acc += chunk;
+        cb.onUpdateRound(roundId, r => ({ ...r, content: acc }));
+        // Also emit as regular content for report accumulation
+        cb.onContent(chunk);
+      }
+      cb.onUpdateRound(roundId, r => ({ ...r, isStreaming: false }));
+    }
+  }
+
+  cb.onComplete('mock-report-001');
 }
 
 async function runRealSSE(
@@ -240,10 +369,13 @@ export function startStream(
   const run = async () => {
     try {
       if (USE_MOCK) {
-        let events = MOCK_PLAN_EVENTS;
-        if (params.is_deep_search) events = MOCK_RESEARCH_EVENTS;
-        else if (params.is_edit_plan) events = MOCK_EDIT_PLAN_EVENTS;
-        await runMockSSE(events, callbacks, controller.signal);
+        if (params.is_deep_search) {
+          await runMockResearch(callbacks, controller.signal);
+        } else {
+          let events = MOCK_PLAN_EVENTS;
+          if (params.is_edit_plan) events = MOCK_EDIT_PLAN_EVENTS;
+          await runMockSSE(events, callbacks, controller.signal);
+        }
       } else {
         await runRealSSE(messages, params, callbacks, controller.signal);
       }

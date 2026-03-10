@@ -1,4 +1,4 @@
-import type { Stage, ThoughtItem, MessageItem } from './deep-research';
+import type { Stage, ThoughtItem, MessageItem, ResearchRound } from './deep-research';
 
 export interface ResearchSession {
   id: string;
@@ -9,5 +9,6 @@ export interface ResearchSession {
   messageHistory: MessageItem[];
   planText: string;
   reportMarkdown: string;
+  researchRounds: ResearchRound[];
   deepSearchStep: number;
 }
