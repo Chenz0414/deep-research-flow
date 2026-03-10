@@ -369,10 +369,13 @@ export function startStream(
   const run = async () => {
     try {
       if (USE_MOCK) {
-        let events = MOCK_PLAN_EVENTS;
-        if (params.is_deep_search) events = MOCK_RESEARCH_EVENTS;
-        else if (params.is_edit_plan) events = MOCK_EDIT_PLAN_EVENTS;
-        await runMockSSE(events, callbacks, controller.signal);
+        if (params.is_deep_search) {
+          await runMockResearch(callbacks, controller.signal);
+        } else {
+          let events = MOCK_PLAN_EVENTS;
+          if (params.is_edit_plan) events = MOCK_EDIT_PLAN_EVENTS;
+          await runMockSSE(events, callbacks, controller.signal);
+        }
       } else {
         await runRealSSE(messages, params, callbacks, controller.signal);
       }
