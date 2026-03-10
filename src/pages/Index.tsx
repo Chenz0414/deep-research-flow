@@ -238,7 +238,6 @@ const Index = () => {
               stage={activeSession.stage}
               planText={activeSession.planText}
               reportMarkdown={activeSession.reportMarkdown}
-              researchRounds={activeSession.researchRounds}
               onEditPlan={handleEditPlanWithText}
               onStartResearch={handleStartResearch}
             />
