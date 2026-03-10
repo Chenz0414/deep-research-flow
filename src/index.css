@@ -197,7 +197,7 @@
 
   /* Tag pill style */
   .tag-pill {
-    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium;
-    @apply bg-primary/8 text-primary;
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium text-primary;
+    background-color: hsl(var(--primary) / 0.08);
   }
 }
