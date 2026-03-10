@@ -61,6 +61,7 @@ export function WelcomeView({ onSend }: WelcomeViewProps) {
   const [selectedStyle, setSelectedStyle] = useState('academic');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [hoveredStyle, setHoveredStyle] = useState<string | null>(null);
 
   useEffect(() => {
     textareaRef.current?.focus();
