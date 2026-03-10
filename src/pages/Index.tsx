@@ -84,6 +84,7 @@ const Index = () => {
       onResearchDone: () => {
         updateSession(sessionId, s => ({ ...s, isWritingReport: true }));
       },
+      onComplete: () => {
         abortsRef.current.delete(sessionId);
         if (streamPhase === 'plan') {
           updateSession(sessionId, s => ({ ...s, stage: 'REVIEWING_PLAN' }));
