@@ -8,7 +8,7 @@ import { ResearchProcessView } from '@/components/deep-research/ResearchProcessV
 import { Button } from '@/components/ui/button';
 import { FileText, Search, Download } from 'lucide-react';
 import type { Stage, ThoughtItem, MessageItem, ApiMessage, ResearchRound } from '@/types/deep-research';
-import type { ResearchSession } from '@/types/research-session';
+import type { ResearchSession, ResearchProgress } from '@/types/research-session';
 
 function toApiMessages(messages: MessageItem[]): ApiMessage[] {
   return messages.filter(m => m.role === 'user').map(m => ({ text: m.content }));
