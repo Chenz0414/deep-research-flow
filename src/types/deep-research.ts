@@ -22,6 +22,30 @@ export interface PlanSection {
   description: string;
 }
 
+export interface SearchReference {
+  title: string;
+  url: string;
+  favicon?: string;
+}
+
+export interface SearchImage {
+  url: string;
+  alt?: string;
+}
+
+export interface ResearchRound {
+  id: string;
+  type: 'search' | 'text' | 'summary';
+  /** For 'search' type: the search query */
+  query?: string;
+  references?: SearchReference[];
+  images?: SearchImage[];
+  /** For 'text' and 'summary' type: markdown content */
+  content?: string;
+  /** Whether this round is still streaming */
+  isStreaming?: boolean;
+}
+
 export interface SSEEvent {
   event: string;
   data: string;
