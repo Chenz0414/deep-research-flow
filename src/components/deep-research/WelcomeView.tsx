@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, Send, BookOpen, Brain, FileText, Zap, Globe, Shield, ChevronDown, Star, MessageSquare, ArrowRight, TrendingUp, Cpu, Microscope } from 'lucide-react';
+import { Sparkles, Send, BookOpen, Brain, FileText, Zap, Globe, Shield, ChevronDown, Star, MessageSquare, ArrowRight, TrendingUp, Cpu, Microscope, GraduationCap, Newspaper, Share2, BarChart3, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 
@@ -12,6 +12,14 @@ const SEARCH_MODES = [
   { label: '快速', step: 1, cost: 10, icon: Zap },
   { label: '标准', step: 2, cost: 15, icon: TrendingUp },
   { label: '深度', step: 3, cost: 20, icon: Microscope },
+] as const;
+
+const WRITING_STYLES = [
+  { id: 'academic', label: '学术风格', icon: GraduationCap, desc: '正式、客观、逻辑严谨，使用精准术语，适用于论文、报告与学术研究。' },
+  { id: 'popular', label: '科普风格', icon: BookOpen, desc: '通俗易懂、生动自然，适合向大众解释复杂概念。' },
+  { id: 'news', label: '新闻风格', icon: Newspaper, desc: '事实导向、简洁客观，强调信息准确与中立表达。' },
+  { id: 'social', label: '社交媒体风格', icon: Share2, desc: '简短有力、吸引注意力，适合分享与传播。' },
+  { id: 'strategy', label: '战略投资风格', icon: BarChart3, desc: '深度分析、数据驱动，聚焦市场趋势与投资价值判断。' },
 ] as const;
 
 const QUICK_TOPICS = [
@@ -50,6 +58,7 @@ const FAQS = [
 export function WelcomeView({ onSend }: WelcomeViewProps) {
   const [input, setInput] = useState('');
   const [selectedStep, setSelectedStep] = useState(2);
+  const [selectedStyle, setSelectedStyle] = useState('academic');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
@@ -106,6 +115,47 @@ export function WelcomeView({ onSend }: WelcomeViewProps) {
               </p>
             </div>
           </div>
+
+          {/* Writing Style Selector */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.25, duration: 0.5 }}
+            className="space-y-2"
+          >
+            <div className="space-y-1.5">
+              {WRITING_STYLES.map((style) => {
+                const StyleIcon = style.icon;
+                const isSelected = selectedStyle === style.id;
+                return (
+                  <button
+                    key={style.id}
+                    onClick={() => setSelectedStyle(style.id)}
+                    className={`w-full flex items-start gap-3 px-4 py-3 rounded-xl border transition-all duration-200 text-left cursor-pointer ${
+                      isSelected
+                        ? 'border-primary/30 bg-primary/5'
+                        : 'border-border/50 bg-card hover:bg-hover-bg hover:border-border'
+                    }`}
+                  >
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5 ${
+                      isSelected ? 'bg-primary/10' : 'bg-card-alt'
+                    }`}>
+                      <StyleIcon className={`w-4 h-4 ${isSelected ? 'text-primary' : 'text-subtitle'}`} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between">
+                        <span className={`text-sm font-medium ${isSelected ? 'text-title' : 'text-body2'}`}>
+                          {style.label}
+                        </span>
+                        {isSelected && <Check className="w-4 h-4 text-primary flex-shrink-0" />}
+                      </div>
+                      <p className="text-xs text-subtitle mt-0.5 leading-relaxed">{style.desc}</p>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </motion.div>
 
           {/* Input area */}
           <motion.div
