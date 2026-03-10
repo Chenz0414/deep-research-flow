@@ -82,6 +82,8 @@ export function RightPanel({
                 progress={researchProgress ?? { totalSections: 0, completedSections: 0 }}
                 onToggleRightPanel={onToggleRightPanel || (() => {})}
                 rightPanelVisible={rightPanelVisible ?? true}
+                startTime={researchStartTime}
+                endTime={researchEndTime}
               />
 
               {/* Report - only after research rounds complete */}
