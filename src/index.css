@@ -201,3 +201,21 @@
     background-color: hsl(var(--primary) / 0.08);
   }
 }
+
+/* Print: only show the report */
+@media print {
+  body * {
+    visibility: hidden !important;
+  }
+  .print-report,
+  .print-report * {
+    visibility: visible !important;
+  }
+  .print-report {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    padding: 2rem !important;
+  }
+}

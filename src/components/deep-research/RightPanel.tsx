@@ -88,7 +88,7 @@ export function RightPanel({
 
               {/* Report - only after research rounds complete */}
               {showReport && (
-                <div className="px-4 sm:px-8 py-6">
+                <div className="px-4 sm:px-8 py-6 print-report">
                   <article className="prose prose-sm max-w-none">
                     <ReactMarkdown remarkPlugins={[remarkGfm]}>
                       {reportMarkdown}
