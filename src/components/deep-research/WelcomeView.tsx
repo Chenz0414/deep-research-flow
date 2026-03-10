@@ -107,30 +107,11 @@ export function WelcomeView({ onSend }: WelcomeViewProps) {
             </div>
           </div>
 
-          {/* Features */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            {FEATURES.map((f, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 + i * 0.1, duration: 0.5 }}
-                className="text-center p-5 rounded-xl bg-card-alt border border-border/50 surface-interactive"
-              >
-                <div className="w-10 h-10 rounded-xl bg-primary/8 flex items-center justify-center mx-auto mb-3">
-                  <f.icon className="w-5 h-5 text-primary" />
-                </div>
-                <p className="text-sm font-semibold text-title mb-1">{f.title}</p>
-                <p className="text-xs text-subtitle leading-relaxed">{f.desc}</p>
-              </motion.div>
-            ))}
-          </div>
-
           {/* Input area */}
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5, duration: 0.5 }}
+            transition={{ delay: 0.3, duration: 0.5 }}
             className="relative group"
           >
             <div className="absolute -inset-px rounded-xl gradient-primary opacity-0 group-focus-within:opacity-20 transition-opacity duration-300 blur-sm" />
@@ -185,7 +166,7 @@ export function WelcomeView({ onSend }: WelcomeViewProps) {
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.7, duration: 0.5 }}
+            transition={{ delay: 0.5, duration: 0.5 }}
             className="grid grid-cols-1 sm:grid-cols-2 gap-2"
           >
             {QUICK_TOPICS.map((topic, i) => {
@@ -195,7 +176,7 @@ export function WelcomeView({ onSend }: WelcomeViewProps) {
                   key={i}
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.75 + i * 0.06 }}
+                  transition={{ delay: 0.55 + i * 0.06 }}
                   onClick={() => onSend(topic.text, selectedStep)}
                   className="group/topic flex items-center gap-3 px-4 py-3 rounded-xl border border-border/50 bg-card hover:bg-hover-bg hover:border-primary/20 transition-all duration-200 text-left cursor-pointer"
                 >
@@ -209,6 +190,21 @@ export function WelcomeView({ onSend }: WelcomeViewProps) {
                 </motion.button>
               );
             })}
+          </motion.div>
+
+          {/* Features - compact row */}
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.7, duration: 0.5 }}
+            className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 pt-2"
+          >
+            {FEATURES.map((f, i) => (
+              <div key={i} className="flex items-center gap-2 text-subtitle">
+                <f.icon className="w-3.5 h-3.5 text-primary/50" />
+                <span className="text-[11px] font-medium">{f.title}</span>
+              </div>
+            ))}
           </motion.div>
         </motion.div>
 
