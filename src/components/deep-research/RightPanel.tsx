@@ -43,6 +43,7 @@ export function RightPanel({ stage, planText, reportMarkdown, onEditPlan, onStar
             key="report"
             content={reportMarkdown}
             isStreaming={isResearching}
+            hideTopBar
           />
         )}
       </AnimatePresence>

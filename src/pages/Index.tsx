@@ -5,6 +5,8 @@ import { AppSidebar } from '@/components/deep-research/AppSidebar';
 import { WelcomeView } from '@/components/deep-research/WelcomeView';
 import { RightPanel } from '@/components/deep-research/RightPanel';
 import { ResearchProcessView } from '@/components/deep-research/ResearchProcessView';
+import { Button } from '@/components/ui/button';
+import { FileText, Search, Download } from 'lucide-react';
 import type { Stage, ThoughtItem, MessageItem, ApiMessage, ResearchRound } from '@/types/deep-research';
 import type { ResearchSession } from '@/types/research-session';
 
@@ -232,33 +234,48 @@ const Index = () => {
       </div>
 
       {isActive && activeSession ? (
-        <>
-          <div className="flex-1 min-w-0">
-            <RightPanel
-              stage={activeSession.stage}
-              planText={activeSession.planText}
-              reportMarkdown={activeSession.reportMarkdown}
-              onEditPlan={handleEditPlanWithText}
-              onStartResearch={handleStartResearch}
-            />
-          </div>
+        <div className="flex-1 min-w-0 flex flex-col h-full">
+          {/* Unified top bar for RESEARCHING / COMPLETED */}
           {(activeSession.stage === 'RESEARCHING' || activeSession.stage === 'COMPLETED') && (
-            <>
-              <div className="hidden sm:block w-[480px] flex-shrink-0 border-l border-border/50 h-full">
-                <ResearchProcessView
-                  rounds={activeSession.researchRounds}
-                  isResearching={activeSession.stage === 'RESEARCHING'}
-                />
+            <div className="flex items-center justify-between px-4 sm:px-6 py-2 border-b border-border/50 flex-shrink-0 bg-card-alt">
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-1.5">
+                  <FileText className="w-3.5 h-3.5 text-primary/60" />
+                  <span className="text-xs font-medium text-title">研究报告</span>
+                </div>
+                {activeSession.stage === 'RESEARCHING' && (
+                  <span className="tag-pill text-[10px]">生成中...</span>
+                )}
               </div>
-              <div className="sm:hidden">
-                <ResearchProcessView
-                  rounds={activeSession.researchRounds}
-                  isResearching={activeSession.stage === 'RESEARCHING'}
-                />
-              </div>
-            </>
+              <Button variant="outline" size="sm" onClick={() => window.print()} className="shadow-sm hover:bg-hover-bg h-7 text-xs">
+                <Download className="w-3 h-3 mr-1" />
+                导出 PDF
+              </Button>
+            </div>
           )}
-        </>
+
+          {/* Content area */}
+          <div className="flex-1 min-w-0 flex overflow-hidden">
+            <div className="flex-1 min-w-0">
+              <RightPanel
+                stage={activeSession.stage}
+                planText={activeSession.planText}
+                reportMarkdown={activeSession.reportMarkdown}
+                onEditPlan={handleEditPlanWithText}
+                onStartResearch={handleStartResearch}
+              />
+            </div>
+            {(activeSession.stage === 'RESEARCHING' || activeSession.stage === 'COMPLETED') && (
+              <div className="hidden sm:block w-[480px] flex-shrink-0 border-l border-border/50">
+                <ResearchProcessView
+                  rounds={activeSession.researchRounds}
+                  isResearching={activeSession.stage === 'RESEARCHING'}
+                  hideTopBar
+                />
+              </div>
+            )}
+          </div>
+        </div>
       ) : (
         <div className="flex-1 min-w-0">
           <WelcomeView onSend={handleSend} />
