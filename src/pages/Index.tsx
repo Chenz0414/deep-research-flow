@@ -20,6 +20,7 @@ const MODEL = 'GPT-4.1';
 const Index = () => {
   const [sessions, setSessions] = useState<ResearchSession[]>([]);
   const [activeSessionId, setActiveSessionId] = useState<string | undefined>();
+  const [showRightPanel, setShowRightPanel] = useState(true);
   const { toast } = useToast();
 
   const abortsRef = useRef<Map<string, () => void>>(new Map());
@@ -263,9 +264,11 @@ const Index = () => {
                 reportMarkdown={activeSession.reportMarkdown}
                 onEditPlan={handleEditPlanWithText}
                 onStartResearch={handleStartResearch}
+                onToggleRightPanel={() => setShowRightPanel(prev => !prev)}
+                rightPanelVisible={showRightPanel}
               />
             </div>
-            {(activeSession.stage === 'RESEARCHING' || activeSession.stage === 'COMPLETED') && (
+            {(activeSession.stage === 'RESEARCHING' || activeSession.stage === 'COMPLETED') && showRightPanel && (
               <div className="hidden sm:block w-[480px] flex-shrink-0 border-l border-border/50">
                 <ResearchProcessView
                   rounds={activeSession.researchRounds}
