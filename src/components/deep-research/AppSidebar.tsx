@@ -145,13 +145,15 @@ export function AppSidebar({ sessions, activeSessionId, onNewResearch, onSelectS
 
   return (
     <>
-      {/* Mobile hamburger trigger */}
-      <button
-        onClick={() => setMobileOpen(true)}
-        className="fixed top-4 left-4 z-50 sm:hidden p-2 rounded-lg bg-card border border-border/60 shadow-sm hover:bg-hover-bg transition-colors cursor-pointer"
-      >
-        <Menu className="w-5 h-5 text-title" />
-      </button>
+      {/* Mobile hamburger trigger - only show when not controlled externally */}
+      {onMobileOpenChange == null && (
+        <button
+          onClick={() => setMobileOpen(true)}
+          className="fixed top-4 left-4 z-50 sm:hidden p-2 rounded-lg bg-card border border-border/60 shadow-sm hover:bg-hover-bg transition-colors cursor-pointer"
+        >
+          <Menu className="w-5 h-5 text-title" />
+        </button>
+      )}
 
       {/* Mobile overlay */}
       {mobileOpen && (
