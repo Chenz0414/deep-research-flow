@@ -159,10 +159,10 @@ export function AppSidebar({ sessions, activeSessionId, onNewResearch, onSelectS
       {collapsed && (
         <button
           onClick={() => setCollapsed(false)}
-          className="hidden sm:flex fixed top-3 left-3 z-10 p-2 rounded-2xl bg-muted hover:bg-hover-bg transition-colors cursor-pointer"
+          className="hidden sm:flex fixed top-3 left-3 z-10 p-2 rounded-2xl bg-background shadow-sm hover:bg-muted transition-colors cursor-pointer"
           title="展开侧边栏"
         >
-          <Menu className="w-5 h-5 text-subtitle" />
+          <PanelLeftOpen className="w-5 h-5 text-subtitle" />
         </button>
       )}
 
