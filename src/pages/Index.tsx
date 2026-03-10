@@ -244,7 +244,7 @@ const Index = () => {
           </div>
           {(activeSession.stage === 'RESEARCHING' || activeSession.stage === 'COMPLETED') && (
             <>
-              <div className="hidden sm:block w-[320px] flex-shrink-0 border-l border-border/50 h-full">
+              <div className="hidden sm:block w-[480px] flex-shrink-0 border-l border-border/50 h-full">
                 <ResearchProcessView
                   rounds={activeSession.researchRounds}
                   isResearching={activeSession.stage === 'RESEARCHING'}
