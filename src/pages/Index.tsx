@@ -248,6 +248,8 @@ const Index = () => {
           activeSessionId={activeSessionId}
           onNewResearch={handleNewResearch}
           onSelectSession={handleSelectSession}
+          mobileOpen={mobileSidebarOpen}
+          onMobileOpenChange={setMobileSidebarOpen}
         />
       </div>
 
