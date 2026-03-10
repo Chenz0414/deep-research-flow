@@ -78,7 +78,12 @@ const Index = () => {
           researchRounds: s.researchRounds.map(r => r.id === roundId ? updater(r) : r),
         }));
       },
-      onComplete: () => {
+      onProgressUpdate: (progress: ResearchProgress) => {
+        updateSession(sessionId, s => ({ ...s, researchProgress: progress }));
+      },
+      onResearchDone: () => {
+        updateSession(sessionId, s => ({ ...s, isWritingReport: true }));
+      },
         abortsRef.current.delete(sessionId);
         if (streamPhase === 'plan') {
           updateSession(sessionId, s => ({ ...s, stage: 'REVIEWING_PLAN' }));
