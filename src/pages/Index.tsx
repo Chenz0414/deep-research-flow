@@ -5,6 +5,8 @@ import { AppSidebar } from '@/components/deep-research/AppSidebar';
 import { WelcomeView } from '@/components/deep-research/WelcomeView';
 import { RightPanel } from '@/components/deep-research/RightPanel';
 import { ResearchProcessView } from '@/components/deep-research/ResearchProcessView';
+import { Button } from '@/components/ui/button';
+import { FileText, Search, Download } from 'lucide-react';
 import type { Stage, ThoughtItem, MessageItem, ApiMessage, ResearchRound } from '@/types/deep-research';
 import type { ResearchSession } from '@/types/research-session';
 
