@@ -277,7 +277,6 @@ const Index = () => {
                 />
               </div>
             )}
-            )}
           </div>
         </div>
       ) : (
