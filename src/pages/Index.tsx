@@ -264,6 +264,8 @@ const Index = () => {
                 reportMarkdown={activeSession.reportMarkdown}
                 onEditPlan={handleEditPlanWithText}
                 onStartResearch={handleStartResearch}
+                onToggleRightPanel={() => setShowRightPanel(prev => !prev)}
+                rightPanelVisible={showRightPanel}
               />
             </div>
             {(activeSession.stage === 'RESEARCHING' || activeSession.stage === 'COMPLETED') && (
