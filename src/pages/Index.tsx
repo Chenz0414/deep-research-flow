@@ -259,6 +259,13 @@ const Index = () => {
           {(activeSession.stage === 'RESEARCHING' || activeSession.stage === 'COMPLETED') && (
             <div className="flex items-center justify-between px-4 sm:px-6 py-2 border-b border-border/50 flex-shrink-0 bg-card-alt">
               <div className="flex items-center gap-3">
+                {/* Mobile sidebar trigger - only visible on mobile */}
+                <button
+                  onClick={() => setMobileSidebarOpen(true)}
+                  className="sm:hidden p-1.5 -ml-1 rounded-md hover:bg-hover-bg transition-colors cursor-pointer"
+                >
+                  <Menu className="w-4 h-4 text-subtitle" />
+                </button>
                 <div className="flex items-center gap-1.5">
                   <FileText className="w-3.5 h-3.5 text-primary/60" />
                   <span className="text-xs font-medium text-title">研究报告</span>
