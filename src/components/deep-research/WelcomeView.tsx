@@ -233,7 +233,7 @@ export function WelcomeView({ onSend }: WelcomeViewProps) {
             transition={{ duration: 0.6 }}
             className="text-center mb-12 sm:mb-14"
           >
-            <h2 className="text-xl sm:text-2xl font-bold text-title mb-3">为什么选择 DeepFlow</h2>
+            <h2 className="text-xl sm:text-2xl font-bold text-title mb-3">为什么选择深度研究</h2>
             <p className="text-sm text-subtitle max-w-md mx-auto">
               强大的 AI 能力赋予您专业研究员级别的调研效率
             </p>
