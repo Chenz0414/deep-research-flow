@@ -31,26 +31,26 @@ export function MarkdownViewer({ content, isStreaming }: MarkdownViewerProps) {
       className="h-full flex flex-col"
     >
       {/* Top bar */}
-      <div className="flex items-center justify-between px-6 py-3 border-b border-border/50 flex-shrink-0" style={{ background: 'hsl(var(--surface-elevated))' }}>
+      <div className="flex items-center justify-between px-4 sm:px-6 py-3 border-b border-border/50 flex-shrink-0 bg-card-alt">
         <div className="flex items-center gap-2">
           <FileText className="w-4 h-4 text-primary/60" />
-          <h2 className="text-sm font-medium text-foreground/80">研究报告</h2>
+          <h2 className="text-sm font-medium text-title">研究报告</h2>
           {isStreaming && (
-            <span className="text-[10px] font-medium text-primary bg-primary/8 px-2 py-0.5 rounded-full">
+            <span className="tag-pill text-[10px]">
               生成中...
             </span>
           )}
         </div>
-        <Button variant="outline" size="sm" onClick={handleExportPDF} className="shadow-sm">
+        <Button variant="outline" size="sm" onClick={handleExportPDF} className="shadow-sm hover:bg-hover-bg">
           <Download className="w-3.5 h-3.5 mr-1.5" />
-          导出 PDF
+          <span className="hidden sm:inline">导出 PDF</span>
         </Button>
       </div>
 
       {/* Markdown content */}
       <div
         ref={scrollRef}
-        className="flex-1 overflow-y-auto px-8 py-6 scrollbar-thin"
+        className="flex-1 overflow-y-auto px-4 sm:px-8 py-6 scrollbar-thin"
       >
         <article className="prose prose-sm max-w-none">
           <ReactMarkdown remarkPlugins={[remarkGfm]}>

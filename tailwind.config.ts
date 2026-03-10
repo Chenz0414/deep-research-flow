@@ -57,6 +57,20 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        /* Semantic text colors */
+        title: "hsl(var(--title))",
+        body2: "hsl(var(--body2))",
+        subtitle: "hsl(var(--subtitle))",
+        /* Theme accent (teal green) */
+        "theme-accent": {
+          DEFAULT: "hsl(var(--theme-accent))",
+          foreground: "hsl(var(--theme-accent-foreground))",
+        },
+        /* Surfaces */
+        "hover-bg": "hsl(var(--hover-bg))",
+        "card-alt": "hsl(var(--card-alt))",
+        "menu-selected": "hsl(var(--menu-selected))",
+        /* Timeline */
         timeline: {
           line: "hsl(var(--timeline-line))",
           "dot-active": "hsl(var(--timeline-dot-active))",
@@ -113,14 +127,14 @@ export default {
         DEFAULT: {
           css: {
             maxWidth: 'none',
-            color: 'hsl(var(--foreground))',
+            color: 'hsl(var(--body2))',
             a: { color: 'hsl(var(--primary))' },
-            strong: { color: 'hsl(var(--foreground))' },
-            'h1, h2, h3, h4': { color: 'hsl(var(--foreground))' },
+            strong: { color: 'hsl(var(--title))' },
+            'h1, h2, h3, h4': { color: 'hsl(var(--title))' },
             code: { color: 'hsl(var(--primary))' },
             blockquote: { borderLeftColor: 'hsl(var(--primary))' },
             hr: { borderColor: 'hsl(var(--border))' },
-            'thead th': { color: 'hsl(var(--foreground))' },
+            'thead th': { color: 'hsl(var(--title))' },
           },
         },
       },

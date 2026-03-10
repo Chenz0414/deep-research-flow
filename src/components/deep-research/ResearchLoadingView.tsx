@@ -13,12 +13,12 @@ export function ResearchLoadingView() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="flex flex-col items-center justify-center h-full gap-10 relative"
+      className="flex flex-col items-center justify-center h-full gap-10 relative px-4"
     >
       {/* Background glow */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[400px] h-[300px] rounded-full opacity-[0.06]"
-          style={{ background: 'radial-gradient(circle, hsl(var(--primary)), transparent 70%)' }} />
+          style={{ background: 'radial-gradient(circle, hsl(var(--gradient-from)), hsl(var(--gradient-to)) 60%, transparent 80%)' }} />
       </div>
 
       {/* Animated orb */}
@@ -55,7 +55,7 @@ export function ResearchLoadingView() {
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="text-lg font-semibold text-foreground"
+          className="text-lg font-semibold text-title"
         >
           正在启动深度研究
         </motion.h2>
@@ -63,7 +63,7 @@ export function ResearchLoadingView() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
-          className="text-sm text-muted-foreground"
+          className="text-sm text-subtitle"
         >
           AI 正在多维度搜索与分析，请稍候...
         </motion.p>
@@ -87,10 +87,10 @@ export function ResearchLoadingView() {
               <step.icon className="w-4 h-4 text-primary" />
             </motion.div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm text-foreground/70">{step.label}</p>
+              <p className="text-sm text-body2">{step.label}</p>
               <motion.div className="h-1 bg-primary/10 rounded-full mt-2 overflow-hidden">
                 <motion.div
-                  className="h-full bg-primary/40 rounded-full"
+                  className="h-full rounded-full gradient-primary"
                   initial={{ width: '0%' }}
                   animate={{ width: '100%' }}
                   transition={{ duration: 3, delay: 1 + step.delay, ease: 'easeInOut' }}
