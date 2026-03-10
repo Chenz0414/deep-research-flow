@@ -284,6 +284,8 @@ const Index = () => {
                 rightPanelVisible={showRightPanel}
                 researchProgress={activeSession.researchProgress}
                 isWritingReport={activeSession.isWritingReport}
+                researchStartTime={activeSession.researchStartTime}
+                researchEndTime={activeSession.researchEndTime}
               />
             </div>
             {(activeSession.stage === 'RESEARCHING' || activeSession.stage === 'COMPLETED') && showRightPanel && (
