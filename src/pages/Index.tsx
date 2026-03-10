@@ -6,7 +6,7 @@ import { WelcomeView } from '@/components/deep-research/WelcomeView';
 import { RightPanel } from '@/components/deep-research/RightPanel';
 import { ResearchProcessView } from '@/components/deep-research/ResearchProcessView';
 import { Button } from '@/components/ui/button';
-import { FileText, Search, Download } from 'lucide-react';
+import { FileText, Download, Menu } from 'lucide-react';
 import type { Stage, ThoughtItem, MessageItem, ApiMessage, ResearchRound } from '@/types/deep-research';
 import type { ResearchSession, ResearchProgress } from '@/types/research-session';
 
@@ -21,6 +21,7 @@ const Index = () => {
   const [sessions, setSessions] = useState<ResearchSession[]>([]);
   const [activeSessionId, setActiveSessionId] = useState<string | undefined>();
   const [showRightPanel, setShowRightPanel] = useState(true);
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const { toast } = useToast();
 
   const abortsRef = useRef<Map<string, () => void>>(new Map());
@@ -247,6 +248,8 @@ const Index = () => {
           activeSessionId={activeSessionId}
           onNewResearch={handleNewResearch}
           onSelectSession={handleSelectSession}
+          mobileOpen={mobileSidebarOpen}
+          onMobileOpenChange={setMobileSidebarOpen}
         />
       </div>
 
@@ -256,6 +259,13 @@ const Index = () => {
           {(activeSession.stage === 'RESEARCHING' || activeSession.stage === 'COMPLETED') && (
             <div className="flex items-center justify-between px-4 sm:px-6 py-2 border-b border-border/50 flex-shrink-0 bg-card-alt">
               <div className="flex items-center gap-3">
+                {/* Mobile sidebar trigger - only visible on mobile */}
+                <button
+                  onClick={() => setMobileSidebarOpen(true)}
+                  className="sm:hidden p-1.5 -ml-1 rounded-md hover:bg-hover-bg transition-colors cursor-pointer"
+                >
+                  <Menu className="w-4 h-4 text-subtitle" />
+                </button>
                 <div className="flex items-center gap-1.5">
                   <FileText className="w-3.5 h-3.5 text-primary/60" />
                   <span className="text-xs font-medium text-title">研究报告</span>
@@ -289,7 +299,7 @@ const Index = () => {
               />
             </div>
             {(activeSession.stage === 'RESEARCHING' || activeSession.stage === 'COMPLETED') && showRightPanel && (
-              <div className="hidden sm:block w-[480px] flex-shrink-0 border-l border-border/50">
+              <div className="hidden lg:block w-[480px] flex-shrink-0 border-l border-border/50">
                 <ResearchProcessView
                   rounds={activeSession.researchRounds}
                   isResearching={activeSession.stage === 'RESEARCHING'}
