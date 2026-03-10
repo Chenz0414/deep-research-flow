@@ -115,7 +115,7 @@ export function WelcomeView({ onSend }: WelcomeViewProps) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.25, duration: 0.5 }}
           >
-            <div className="relative flex items-center gap-1.5 bg-card-alt rounded-xl p-1 border border-border/50"
+            <div className="relative flex items-center gap-1 sm:gap-1.5 bg-card-alt rounded-xl p-1 border border-border/50 overflow-x-auto scrollbar-none"
               onMouseLeave={() => setHoveredStyle(null)}
             >
               {WRITING_STYLES.map((style) => {
@@ -124,24 +124,24 @@ export function WelcomeView({ onSend }: WelcomeViewProps) {
                 const activeTooltipId = hoveredStyle || selectedStyle;
                 const showTooltip = style.id === activeTooltipId;
                 return (
-                  <div key={style.id} className="relative flex-1">
+                  <div key={style.id} className="relative flex-1 min-w-0">
                     <button
                       onClick={() => setSelectedStyle(style.id)}
                       onMouseEnter={() => setHoveredStyle(style.id)}
-                      className={`w-full flex items-center justify-center gap-1.5 px-2 py-2 rounded-lg text-xs font-medium transition-all duration-200 cursor-pointer ${
+                      className={`w-full flex items-center justify-center gap-1 sm:gap-1.5 px-1.5 sm:px-2 py-2 rounded-lg text-[11px] sm:text-xs font-medium transition-all duration-200 cursor-pointer ${
                         isSelected
                           ? 'bg-menu-selected text-primary shadow-sm'
                           : 'text-body2 hover:text-title hover:bg-hover-bg'
                       }`}
                     >
-                      <StyleIcon className="w-3.5 h-3.5" />
+                      <StyleIcon className="w-3.5 h-3.5 flex-shrink-0 hidden sm:block" />
                       <span className="whitespace-nowrap">{style.label}</span>
                     </button>
-                    {/* Tooltip - left aligned to tab */}
+                    {/* Tooltip - centered on mobile, left-aligned on desktop */}
                     {showTooltip && (
-                      <div className="absolute left-0 bottom-full mb-2 px-3 py-1.5 rounded-lg bg-popover border border-border/60 shadow-lg text-[11px] text-subtitle leading-relaxed whitespace-nowrap z-50 pointer-events-none">
-                        {style.desc}
-                        <div className="absolute left-4 top-full w-0 h-0 border-x-[5px] border-x-transparent border-t-[5px] border-t-border/60" />
+                      <div className="absolute left-1/2 -translate-x-1/2 sm:left-0 sm:translate-x-0 bottom-full mb-2 px-3 py-1.5 rounded-lg bg-popover border border-border/60 shadow-lg text-[11px] text-subtitle leading-relaxed whitespace-nowrap z-50 pointer-events-none max-w-[90vw]">
+                        <span className="block sm:inline truncate">{style.desc}</span>
+                        <div className="absolute left-1/2 -translate-x-1/2 sm:left-4 sm:translate-x-0 top-full w-0 h-0 border-x-[5px] border-x-transparent border-t-[5px] border-t-border/60" />
                       </div>
                     )}
                   </div>
