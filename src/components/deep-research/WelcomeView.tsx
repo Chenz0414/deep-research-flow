@@ -84,7 +84,7 @@ export function WelcomeView({ onSend }: WelcomeViewProps) {
   return (
     <div className="h-full overflow-y-auto scrollbar-thin">
       {/* Hero Section */}
-      <section className="flex flex-col items-center justify-center min-h-[85vh] px-4 sm:px-8 relative">
+      <section className="flex flex-col items-center justify-center min-h-[85vh] px-4 sm:px-8 pt-16 sm:pt-0 relative">
         {/* Background gradient glow */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[500px] h-[350px] rounded-full opacity-[0.06]"
