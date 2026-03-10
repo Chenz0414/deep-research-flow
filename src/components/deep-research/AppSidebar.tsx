@@ -21,10 +21,16 @@ const STAGE_CONFIG: Record<string, { label: string; color: string; pulse?: boole
   COMPLETED: { label: '已完成', color: 'text-theme-accent' },
 };
 
-export function AppSidebar({ sessions, activeSessionId, onNewResearch, onSelectSession }: AppSidebarProps) {
+export function AppSidebar({ sessions, activeSessionId, onNewResearch, onSelectSession, mobileOpen: controlledMobileOpen, onMobileOpenChange }: AppSidebarProps) {
   const [searchQuery, setSearchQuery] = useState('');
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const [internalMobileOpen, setInternalMobileOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
+
+  const mobileOpen = controlledMobileOpen ?? internalMobileOpen;
+  const setMobileOpen = (open: boolean) => {
+    onMobileOpenChange?.(open);
+    setInternalMobileOpen(open);
+  };
 
   const filtered = sessions.filter(s =>
     s.title.toLowerCase().includes(searchQuery.toLowerCase())
