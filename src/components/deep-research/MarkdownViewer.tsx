@@ -11,7 +11,7 @@ interface MarkdownViewerProps {
   hideTopBar?: boolean;
 }
 
-export function MarkdownViewer({ content, isStreaming }: MarkdownViewerProps) {
+export function MarkdownViewer({ content, isStreaming, hideTopBar }: MarkdownViewerProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -20,10 +20,6 @@ export function MarkdownViewer({ content, isStreaming }: MarkdownViewerProps) {
     }
   }, [content, isStreaming]);
 
-  const handleExportPDF = () => {
-    window.print();
-  };
-
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -31,22 +27,6 @@ export function MarkdownViewer({ content, isStreaming }: MarkdownViewerProps) {
       transition={{ duration: 0.4 }}
       className="h-full flex flex-col"
     >
-      {/* Top bar */}
-      <div className="flex items-center justify-between px-4 sm:px-6 py-3 border-b border-border/50 flex-shrink-0 bg-card-alt">
-        <div className="flex items-center gap-2">
-          <FileText className="w-4 h-4 text-primary/60" />
-          <h2 className="text-sm font-medium text-title">研究报告</h2>
-          {isStreaming && (
-            <span className="tag-pill text-[10px]">
-              生成中...
-            </span>
-          )}
-        </div>
-        <Button variant="outline" size="sm" onClick={handleExportPDF} className="shadow-sm hover:bg-hover-bg">
-          <Download className="w-3.5 h-3.5 mr-1.5" />
-          <span className="hidden sm:inline">导出 PDF</span>
-        </Button>
-      </div>
 
       {/* Markdown content */}
       <div

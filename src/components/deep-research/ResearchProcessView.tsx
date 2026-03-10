@@ -141,7 +141,7 @@ function SummaryCard({ round }: { round: ResearchRound }) {
   );
 }
 
-export function ResearchProcessView({ rounds, isResearching }: ResearchProcessViewProps) {
+export function ResearchProcessView({ rounds, isResearching, hideTopBar }: ResearchProcessViewProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -150,10 +150,6 @@ export function ResearchProcessView({ rounds, isResearching }: ResearchProcessVi
     }
   }, [rounds]);
 
-  const handleExportPDF = () => {
-    window.print();
-  };
-
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -161,22 +157,6 @@ export function ResearchProcessView({ rounds, isResearching }: ResearchProcessVi
       transition={{ duration: 0.4 }}
       className="h-full flex flex-col"
     >
-      {/* Top bar */}
-      <div className="flex items-center justify-between px-4 sm:px-6 py-3 border-b border-border/50 flex-shrink-0 bg-card-alt">
-        <div className="flex items-center gap-2">
-          <Search className="w-4 h-4 text-primary/60" />
-          <h2 className="text-sm font-medium text-title">深度研究</h2>
-          {isResearching && (
-            <span className="tag-pill text-[10px]">研究中...</span>
-          )}
-        </div>
-        {!isResearching && rounds.length > 0 && (
-          <Button variant="outline" size="sm" onClick={handleExportPDF} className="shadow-sm hover:bg-hover-bg">
-            <Download className="w-3.5 h-3.5 mr-1.5" />
-            <span className="hidden sm:inline">导出 PDF</span>
-          </Button>
-        )}
-      </div>
 
       {/* Scrolling rounds */}
       <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 space-y-4 scrollbar-thin">
