@@ -35,15 +35,15 @@ const CAPABILITIES = [
 ];
 
 const TESTIMONIALS = [
-  { name: '张明', role: '产品经理', avatar: '张', content: '之前做竞品分析需要整整一天，现在用 DeepFlow 几分钟就能得到一份详尽的调研报告，真的太高效了。', rating: 5 },
+  { name: '张明', role: '产品经理', avatar: '张', content: '之前做竞品分析需要整整一天，现在用深度研究几分钟就能得到一份详尽的调研报告，真的太高效了。', rating: 5 },
   { name: '李薇', role: '市场研究员', avatar: '李', content: '信息覆盖面非常广，自动整合多来源数据，让我的市场洞察报告质量提升了一个档次。', rating: 5 },
-  { name: '王浩', role: '创业者', avatar: '王', content: '作为创业者需要快速了解不同行业，DeepFlow 帮我在短时间内完成了深度行业调研，推荐给所有创业伙伴。', rating: 5 },
+  { name: '王浩', role: '创业者', avatar: '王', content: '作为创业者需要快速了解不同行业，深度研究帮我在短时间内完成了深度行业调研，推荐给所有创业伙伴。', rating: 5 },
 ];
 
 const FAQS = [
-  { q: 'DeepFlow 是如何工作的？', a: 'DeepFlow 使用先进的 AI 模型分析您的研究主题，自动生成调研大纲，然后通过多维度搜索和智能分析，最终输出结构化的研究报告。' },
+  { q: '深度研究是如何工作的？', a: '深度研究使用先进的 AI 模型分析您的研究主题，自动生成调研大纲，然后通过多维度搜索和智能分析，最终输出结构化的研究报告。' },
   { q: '生成一份研究报告需要多长时间？', a: '通常在 3-8 分钟内完成，具体时间取决于研究主题的复杂度。相比传统调研方式，效率提升可达 10 倍以上。' },
-  { q: '我可以同时进行多个研究吗？', a: '可以。DeepFlow 支持多任务并发，您可以同时发起多个研究任务，它们会在后台独立运行，互不干扰。' },
+  { q: '我可以同时进行多个研究吗？', a: '可以。深度研究支持多任务并发，您可以同时发起多个研究任务，它们会在后台独立运行，互不干扰。' },
   { q: '研究报告支持哪些导出格式？', a: '目前支持在线阅读和 PDF 导出。报告采用标准 Markdown 格式，便于在各类文档工具中二次编辑。' },
 ];
 
@@ -99,7 +99,7 @@ export function WelcomeView({ onSend }: WelcomeViewProps) {
             </motion.div>
             <div className="space-y-3">
               <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-gradient-primary leading-tight">
-                DeepFlow
+                深度研究
               </h1>
               <p className="text-base sm:text-lg text-subtitle leading-relaxed max-w-lg mx-auto">
                 AI 驱动的深度研究助手，自动生成调研计划并执行多维分析，输出专业研究报告
@@ -233,7 +233,7 @@ export function WelcomeView({ onSend }: WelcomeViewProps) {
             transition={{ duration: 0.6 }}
             className="text-center mb-12 sm:mb-14"
           >
-            <h2 className="text-xl sm:text-2xl font-bold text-title mb-3">为什么选择 DeepFlow</h2>
+            <h2 className="text-xl sm:text-2xl font-bold text-title mb-3">为什么选择深度研究</h2>
             <p className="text-sm text-subtitle max-w-md mx-auto">
               强大的 AI 能力赋予您专业研究员级别的调研效率
             </p>
@@ -322,7 +322,7 @@ export function WelcomeView({ onSend }: WelcomeViewProps) {
           >
             <h2 className="text-xl sm:text-2xl font-bold text-title mb-3">常见问题</h2>
             <p className="text-sm text-subtitle max-w-md mx-auto">
-              关于 DeepFlow 您可能想了解的
+              关于深度研究您可能想了解的
             </p>
           </motion.div>
 
@@ -362,7 +362,7 @@ export function WelcomeView({ onSend }: WelcomeViewProps) {
       {/* Footer */}
       <footer className="py-10 px-4 sm:px-8 border-t border-border/40 text-center">
         <p className="text-xs text-subtitle">
-          © 2024 DeepFlow. AI 驱动的深度研究助手。
+          © 2024 深度研究. AI 驱动的深度研究助手。
         </p>
       </footer>
     </div>
