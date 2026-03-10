@@ -1,9 +1,8 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { Search, Globe, ChevronUp, ChevronDown, FileText, Download } from 'lucide-react';
-import { useState } from 'react';
+import { Search, Globe, ChevronUp, ChevronDown, FileText, Download, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { ResearchRound } from '@/types/deep-research';
 
@@ -13,7 +12,36 @@ interface ResearchProcessViewProps {
   hideTopBar?: boolean;
 }
 
-function SearchRoundCard({ round }: { round: ResearchRound }) {
+function ImageLightbox({ src, alt, onClose }: { src: string; alt: string; onClose: () => void }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-sm cursor-pointer"
+      onClick={onClose}
+    >
+      <motion.img
+        initial={{ scale: 0.85, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.85, opacity: 0 }}
+        transition={{ duration: 0.2 }}
+        src={src}
+        alt={alt}
+        className="max-w-[90vw] max-h-[85vh] object-contain rounded-xl shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      />
+      <button
+        onClick={onClose}
+        className="absolute top-4 right-4 w-8 h-8 rounded-full bg-background/80 flex items-center justify-center text-title hover:bg-background transition-colors cursor-pointer"
+      >
+        <X className="w-4 h-4" />
+      </button>
+    </motion.div>
+  );
+}
+
+function SearchRoundCard({ round, onImageClick }: { round: ResearchRound; onImageClick: (src: string, alt: string) => void }) {
   const [refsExpanded, setRefsExpanded] = useState(true);
   const refs = round.references || [];
   const images = round.images || [];
@@ -23,7 +51,7 @@ function SearchRoundCard({ round }: { round: ResearchRound }) {
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="rounded-xl border border-border/60 bg-card p-4 space-y-3"
+      className="rounded-xl border border-border/60 bg-card p-4 space-y-3 overflow-hidden"
     >
       {/* Search query header */}
       <div className="flex items-start gap-2.5">
@@ -31,7 +59,7 @@ function SearchRoundCard({ round }: { round: ResearchRound }) {
           <Search className="w-3.5 h-3.5 text-primary" />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium text-title leading-snug">{round.query}</p>
+          <p className="text-sm font-medium text-title leading-snug break-words">{round.query}</p>
         </div>
       </div>
 
@@ -80,15 +108,16 @@ function SearchRoundCard({ round }: { round: ResearchRound }) {
         </div>
       )}
 
-      {/* Images */}
+      {/* Images - wrap to next line, no horizontal scroll */}
       {images.length > 0 && (
-        <div className="flex gap-2 overflow-x-auto scrollbar-thin pb-1">
+        <div className="flex flex-wrap gap-2">
           {images.map((img, i) => (
             <img
               key={i}
               src={img.url}
               alt={img.alt || ''}
-              className="w-24 h-20 object-cover rounded-lg border border-border/40 flex-shrink-0"
+              className="w-24 h-20 object-cover rounded-lg border border-border/40 cursor-pointer hover:opacity-80 hover:shadow-md transition-all"
+              onClick={() => onImageClick(img.url, img.alt || '')}
             />
           ))}
         </div>
