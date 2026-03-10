@@ -276,6 +276,8 @@ const Index = () => {
                 onStartResearch={handleStartResearch}
                 onToggleRightPanel={() => setShowRightPanel(prev => !prev)}
                 rightPanelVisible={showRightPanel}
+                researchProgress={activeSession.researchProgress}
+                isWritingReport={activeSession.isWritingReport}
               />
             </div>
             {(activeSession.stage === 'RESEARCHING' || activeSession.stage === 'COMPLETED') && showRightPanel && (
