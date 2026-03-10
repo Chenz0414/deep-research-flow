@@ -9,6 +9,8 @@ interface AppSidebarProps {
   activeSessionId?: string;
   onNewResearch: () => void;
   onSelectSession: (id: string) => void;
+  mobileOpen?: boolean;
+  onMobileOpenChange?: (open: boolean) => void;
 }
 
 const STAGE_CONFIG: Record<string, { label: string; color: string; pulse?: boolean }> = {
