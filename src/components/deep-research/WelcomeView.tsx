@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, Send, BookOpen, Brain, FileText, Zap, Globe, Shield, ChevronDown, Star, MessageSquare, ArrowRight, TrendingUp, Cpu, Microscope } from 'lucide-react';
+import { Sparkles, Send, BookOpen, Brain, FileText, Zap, Globe, Shield, ChevronDown, Star, MessageSquare, ArrowRight, TrendingUp, Cpu, Microscope, GraduationCap, Newspaper, Share2, BarChart3, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 
