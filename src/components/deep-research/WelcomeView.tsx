@@ -115,7 +115,14 @@ export function WelcomeView({ onSend }: WelcomeViewProps) {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.25, duration: 0.5 }}
+            className="relative pt-9 sm:pt-0"
           >
+            {/* Mobile tooltip: always centered */}
+            <div className="sm:hidden absolute left-1/2 -translate-x-1/2 top-0 px-3 py-1.5 rounded-lg bg-popover border border-border/60 shadow-lg text-[11px] text-subtitle leading-relaxed whitespace-normal text-center z-50 pointer-events-none w-max max-w-[calc(100vw-2rem)]">
+              {activeTooltipStyle.desc}
+              <div className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-x-[5px] border-x-transparent border-t-[5px] border-t-border/60" />
+            </div>
+
             <div className="relative flex items-center gap-1 sm:gap-1.5 bg-card-alt rounded-xl p-1 border border-border/50"
               onMouseLeave={() => setHoveredStyle(null)}
             >
@@ -138,20 +145,12 @@ export function WelcomeView({ onSend }: WelcomeViewProps) {
                       <StyleIcon className="w-3.5 h-3.5 flex-shrink-0 hidden sm:block" />
                       <span className="whitespace-nowrap">{style.label}</span>
                     </button>
-                    {/* Tooltip - below on mobile (to avoid clipping), above on desktop */}
+                    {/* Desktop tooltip - left aligned */}
                     {showTooltip && (
-                      <>
-                        {/* Mobile: below */}
-                        <div className="sm:hidden absolute left-1/2 -translate-x-1/2 top-full mt-2 px-3 py-1.5 rounded-lg bg-popover border border-border/60 shadow-lg text-[11px] text-subtitle leading-relaxed whitespace-nowrap z-50 pointer-events-none max-w-[90vw]">
-                          <span className="block truncate">{style.desc}</span>
-                          <div className="absolute left-1/2 -translate-x-1/2 bottom-full w-0 h-0 border-x-[5px] border-x-transparent border-b-[5px] border-b-border/60" />
-                        </div>
-                        {/* Desktop: above */}
-                        <div className="hidden sm:block absolute left-0 bottom-full mb-2 px-3 py-1.5 rounded-lg bg-popover border border-border/60 shadow-lg text-[11px] text-subtitle leading-relaxed whitespace-nowrap z-50 pointer-events-none">
-                          {style.desc}
-                          <div className="absolute left-4 top-full w-0 h-0 border-x-[5px] border-x-transparent border-t-[5px] border-t-border/60" />
-                        </div>
-                      </>
+                      <div className="hidden sm:block absolute left-0 bottom-full mb-2 px-3 py-1.5 rounded-lg bg-popover border border-border/60 shadow-lg text-[11px] text-subtitle leading-relaxed whitespace-nowrap z-50 pointer-events-none">
+                        {style.desc}
+                        <div className="absolute left-4 top-full w-0 h-0 border-x-[5px] border-x-transparent border-t-[5px] border-t-border/60" />
+                      </div>
                     )}
                   </div>
                 );
