@@ -152,6 +152,58 @@ const MOCK_RESEARCH_ROUNDS: Array<{
       '- 无缝的跨端体验设计\n',
     ],
   },
+  // Round 4: search
+  {
+    type: 'search', delay: 600,
+    query: '行业挑战 技术瓶颈 政策法规风险 2026',
+    references: [
+      { title: '数据隐私合规指南', url: 'https://example.com/privacy', favicon: 'https://www.google.com/s2/favicons?domain=example.com' },
+      { title: 'AI 监管政策汇总', url: 'https://example.com/regulation', favicon: 'https://www.google.com/s2/favicons?domain=example.com' },
+      { title: '技术债务与重构策略', url: 'https://example.com/techdebt', favicon: 'https://www.google.com/s2/favicons?domain=github.com' },
+    ],
+    images: [
+      { url: 'https://picsum.photos/seed/r4a/200/160', alt: '风险矩阵' },
+      { url: 'https://picsum.photos/seed/r4b/200/160', alt: '政策时间线' },
+    ],
+  },
+  // Round 4: text
+  {
+    type: 'text', delay: 400,
+    textChunks: [
+      '### 4. 挑战与风险评估\n\n',
+      '当前行业面临的三大核心挑战：\n\n',
+      '- **数据合规风险**：全球数据隐私法规趋严，GDPR 和国内《数据安全法》对数据使用提出更高要求\n',
+      '- **算力成本压力**：大模型训练和推理成本仍居高不下，中小企业难以承受\n',
+      '- **人才缺口**：复合型 AI 人才供给严重不足，薪酬溢价持续攀升\n\n',
+      '建议通过联邦学习、模型蒸馏等技术手段降低成本与合规风险。\n',
+    ],
+  },
+  // Round 5: search
+  {
+    type: 'search', delay: 600,
+    query: '未来趋势预测 AI 行业 战略建议 2026-2030',
+    references: [
+      { title: 'Gartner 2026 技术趋势报告', url: 'https://example.com/gartner', favicon: 'https://www.google.com/s2/favicons?domain=gartner.com' },
+      { title: 'McKinsey AI 战略白皮书', url: 'https://example.com/mckinsey', favicon: 'https://www.google.com/s2/favicons?domain=mckinsey.com' },
+      { title: '行业投资风向标', url: 'https://example.com/investment', favicon: 'https://www.google.com/s2/favicons?domain=example.com' },
+      { title: 'AGI 路线图展望', url: 'https://example.com/agi', favicon: 'https://www.google.com/s2/favicons?domain=openai.com' },
+    ],
+    images: [
+      { url: 'https://picsum.photos/seed/r5a/200/160', alt: '趋势预测' },
+    ],
+  },
+  // Round 5: text
+  {
+    type: 'text', delay: 400,
+    textChunks: [
+      '### 5. 趋势预测与建议\n\n',
+      '基于多维度数据分析，未来 3-5 年关键趋势：\n\n',
+      '1. **多模态融合加速**：文本、图像、视频、代码的统一理解将成为标配\n',
+      '2. **端侧智能崛起**：轻量化模型在终端设备部署将大幅降低延迟和成本\n',
+      '3. **AI Agent 生态成型**：自主决策、工具调用、多智能体协作将进入实用阶段\n\n',
+      '> 📌 战略建议：优先布局垂直领域 Agent 生态，建立数据飞轮和行业壁垒。\n',
+    ],
+  },
   // Summary
   {
     type: 'summary', delay: 800,
