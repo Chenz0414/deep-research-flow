@@ -268,7 +268,7 @@ const Index = () => {
                 rightPanelVisible={showRightPanel}
               />
             </div>
-            {(activeSession.stage === 'RESEARCHING' || activeSession.stage === 'COMPLETED') && (
+            {(activeSession.stage === 'RESEARCHING' || activeSession.stage === 'COMPLETED') && showRightPanel && (
               <div className="hidden sm:block w-[480px] flex-shrink-0 border-l border-border/50">
                 <ResearchProcessView
                   rounds={activeSession.researchRounds}
@@ -276,6 +276,7 @@ const Index = () => {
                   hideTopBar
                 />
               </div>
+            )}
             )}
           </div>
         </div>
