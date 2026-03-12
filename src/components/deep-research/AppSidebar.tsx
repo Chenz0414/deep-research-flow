@@ -51,6 +51,14 @@ export function AppSidebar({ sessions, activeSessionId, onNewResearch, onSelectS
             </h1>
           </div>
           <div className="flex items-center gap-1">
+            {/* Theme toggle */}
+            <button
+              onClick={toggleTheme}
+              className="p-1.5 rounded-md hover:bg-hover-bg transition-colors cursor-pointer"
+              title={theme === 'dark' ? '切换亮色模式' : '切换暗色模式'}
+            >
+              {theme === 'dark' ? <Sun className="w-4 h-4 text-subtitle" /> : <Moon className="w-4 h-4 text-subtitle" />}
+            </button>
             {/* Desktop collapse */}
             <button
               onClick={() => setCollapsed(true)}
