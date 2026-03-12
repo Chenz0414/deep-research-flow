@@ -4,15 +4,15 @@
 
 @layer base {
   :root {
-    /* Core (user-specified, keep tailwind defaults for the rest) */
-    --primary: 240 73.9% 61%;
+    /* Core */
+    --primary: 240 74% 61%;
     --primary-foreground: 0 0% 100%;
     --background: 0 0% 100%;
-    --foreground: 0 0% 9%;
+    --foreground: 240 1% 20%;
     --border: 240 15% 88%;
 
     /* Theme accents */
-    --theme-accent: 160 51% 64%;
+    --theme-accent: 160 56% 64%;
     --theme-accent-foreground: 0 0% 100%;
 
     /* Semantic text */
@@ -39,29 +39,29 @@
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 100%;
     --input: 240 15% 88%;
-    --ring: 240 73.9% 61%;
+    --ring: 240 74% 61%;
     --radius: 0.75rem;
 
     /* Sidebar */
     --sidebar-background: 0 0% 100%;
     --sidebar-foreground: 240 1% 20%;
-    --sidebar-primary: 240 73.9% 61%;
+    --sidebar-primary: 240 74% 61%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 240 18% 95%;
     --sidebar-accent-foreground: 240 1% 20%;
     --sidebar-border: 240 15% 88%;
-    --sidebar-ring: 240 73.9% 61%;
+    --sidebar-ring: 240 74% 61%;
 
     /* Custom tokens */
     --timeline-line: 240 15% 90%;
-    --timeline-dot-active: 240 73.9% 61%;
-    --timeline-dot-done: 160 51% 64%;
+    --timeline-dot-active: 240 74% 61%;
+    --timeline-dot-done: 160 56% 64%;
     --timeline-dot-idle: 240 10% 78%;
     --surface-elevated: 240 18% 98%;
 
     /* Gradient */
-    --gradient-from: 240 73.9% 61%;
-    --gradient-to: 160 51% 64%;
+    --gradient-from: 240 74% 61%;
+    --gradient-to: 160 56% 64%;
   }
 
   .dark {
