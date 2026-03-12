@@ -140,7 +140,7 @@ export function ResearchStatusCard({
           {startTime && (
             <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-mono tabular-nums ${
               isCompleted
-                ? 'bg-primary/8 text-primary'
+                ? 'bg-theme-accent/8 text-theme-accent'
                 : 'bg-card-alt text-subtitle'
             }`}>
               <Clock className="w-3 h-3" />
