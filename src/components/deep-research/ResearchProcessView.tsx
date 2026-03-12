@@ -152,10 +152,10 @@ function SummaryCard({ round }: { round: ResearchRound }) {
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="rounded-xl border border-primary/20 bg-card p-5"
+      className="rounded-xl border border-theme-accent/20 bg-card p-5"
     >
       <div className="flex items-center gap-2 mb-3">
-        <FileText className="w-4 h-4 text-primary" />
+        <FileText className="w-4 h-4 text-theme-accent" />
         <h3 className="text-sm font-semibold text-title">研究总结</h3>
       </div>
       <article className="prose prose-sm max-w-none">

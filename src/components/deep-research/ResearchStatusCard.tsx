@@ -120,7 +120,7 @@ export function ResearchStatusCard({
               <Loader2 className="w-4 h-4 text-primary animate-spin" />
             </div>
           ) : (
-            <CheckCircle2 className="w-5 h-5 text-primary" />
+            <CheckCircle2 className="w-5 h-5 text-theme-accent" />
           )}
 
           <div className="flex flex-col">
@@ -140,7 +140,7 @@ export function ResearchStatusCard({
           {startTime && (
             <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-mono tabular-nums ${
               isCompleted
-                ? 'bg-primary/8 text-primary'
+                ? 'bg-theme-accent/8 text-theme-accent'
                 : 'bg-card-alt text-subtitle'
             }`}>
               <Clock className="w-3 h-3" />
@@ -195,7 +195,7 @@ export function ResearchStatusCard({
                 return (
                   <div key={i} className="flex items-center gap-2.5">
                     {completed ? (
-                      <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0" />
+                      <CheckCircle2 className="w-4 h-4 text-theme-accent flex-shrink-0" />
                     ) : isCurrent ? (
                       <Loader2 className="w-4 h-4 text-primary flex-shrink-0 animate-spin" />
                     ) : (
