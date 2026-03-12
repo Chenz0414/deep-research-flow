@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Plus, Search, FileText, Clock, CheckCircle2, Sparkles, Loader2, Menu, X, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
+import { Plus, Search, FileText, Clock, CheckCircle2, Loader2, Menu, X, PanelLeftClose, PanelLeftOpen, Sun, Moon } from 'lucide-react';
+import { useTheme } from 'next-themes';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type { ResearchSession } from '@/types/research-session';
