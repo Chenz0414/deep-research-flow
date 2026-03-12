@@ -120,7 +120,7 @@ export function ResearchStatusCard({
               <Loader2 className="w-4 h-4 text-primary animate-spin" />
             </div>
           ) : (
-            <CheckCircle2 className="w-5 h-5 text-primary" />
+            <CheckCircle2 className="w-5 h-5 text-theme-accent" />
           )}
 
           <div className="flex flex-col">
