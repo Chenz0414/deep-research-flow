@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Plus, Search, FileText, Clock, CheckCircle2, Sparkles, Loader2, Menu, X, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
+import { Plus, Search, FileText, Clock, CheckCircle2, Loader2, Menu, X, PanelLeftClose, PanelLeftOpen, Sun, Moon } from 'lucide-react';
+import { useTheme } from 'next-themes';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type { ResearchSession } from '@/types/research-session';
@@ -25,6 +26,9 @@ export function AppSidebar({ sessions, activeSessionId, onNewResearch, onSelectS
   const [searchQuery, setSearchQuery] = useState('');
   const [internalMobileOpen, setInternalMobileOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
+  const { theme, setTheme } = useTheme();
+
+  const toggleTheme = () => setTheme(theme === 'dark' ? 'light' : 'dark');
 
   const mobileOpen = controlledMobileOpen ?? internalMobileOpen;
   const setMobileOpen = (open: boolean) => {
@@ -47,6 +51,14 @@ export function AppSidebar({ sessions, activeSessionId, onNewResearch, onSelectS
             </h1>
           </div>
           <div className="flex items-center gap-1">
+            {/* Theme toggle */}
+            <button
+              onClick={toggleTheme}
+              className="p-1.5 rounded-md hover:bg-hover-bg transition-colors cursor-pointer"
+              title={theme === 'dark' ? '切换亮色模式' : '切换暗色模式'}
+            >
+              {theme === 'dark' ? <Sun className="w-4 h-4 text-subtitle" /> : <Moon className="w-4 h-4 text-subtitle" />}
+            </button>
             {/* Desktop collapse */}
             <button
               onClick={() => setCollapsed(true)}
