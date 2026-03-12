@@ -26,6 +26,9 @@ export function AppSidebar({ sessions, activeSessionId, onNewResearch, onSelectS
   const [searchQuery, setSearchQuery] = useState('');
   const [internalMobileOpen, setInternalMobileOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
+  const { theme, setTheme } = useTheme();
+
+  const toggleTheme = () => setTheme(theme === 'dark' ? 'light' : 'dark');
 
   const mobileOpen = controlledMobileOpen ?? internalMobileOpen;
   const setMobileOpen = (open: boolean) => {
