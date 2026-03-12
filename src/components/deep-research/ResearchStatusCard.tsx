@@ -195,7 +195,7 @@ export function ResearchStatusCard({
                 return (
                   <div key={i} className="flex items-center gap-2.5">
                     {completed ? (
-                      <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0" />
+                      <CheckCircle2 className="w-4 h-4 text-theme-accent flex-shrink-0" />
                     ) : isCurrent ? (
                       <Loader2 className="w-4 h-4 text-primary flex-shrink-0 animate-spin" />
                     ) : (
