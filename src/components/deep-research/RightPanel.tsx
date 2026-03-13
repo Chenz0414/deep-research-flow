@@ -36,7 +36,6 @@ export function RightPanel({
   const isResearchPhase = isResearching || isCompleted;
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Only show report when writing has started (research rounds done)
   const showReport = (isWritingReport || isCompleted) && reportMarkdown.length > 0;
 
   useEffect(() => {
@@ -65,8 +64,8 @@ export function RightPanel({
             <div ref={scrollRef} className="flex-1 overflow-y-auto scrollbar-thin">
               {/* Pinned plan at top */}
               <div className="px-4 sm:px-6 pt-4 pb-2">
-                <div className="rounded-xl border border-border/60 bg-card p-4 sm:p-5">
-                  <article className="prose prose-sm max-w-none text-body2">
+                <div className="rounded-lg border border-border/60 bg-card p-4 sm:p-5">
+                  <article className="prose prose-sm max-w-none text-muted-foreground">
                     <ReactMarkdown remarkPlugins={[remarkGfm]}>
                       {planText}
                     </ReactMarkdown>
@@ -86,7 +85,7 @@ export function RightPanel({
                 endTime={researchEndTime}
               />
 
-              {/* Report - only after research rounds complete */}
+              {/* Report */}
               {showReport && (
                 <div className="px-4 sm:px-8 py-6 print-report">
                   <article className="prose prose-sm max-w-none">
@@ -100,10 +99,9 @@ export function RightPanel({
                 </div>
               )}
 
-              {/* Loading state before report */}
               {isResearching && !isWritingReport && !showReport && (
                 <div className="py-8 flex items-center justify-center">
-                  <p className="text-xs text-subtitle">正在进行深度研究，完成后将生成报告...</p>
+                  <p className="text-xs text-muted-foreground">正在进行深度研究，完成后将生成报告...</p>
                 </div>
               )}
             </div>

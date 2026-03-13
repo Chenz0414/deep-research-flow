@@ -2,8 +2,6 @@ import { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { Download, FileText } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 
 interface MarkdownViewerProps {
   content: string;
@@ -27,8 +25,6 @@ export function MarkdownViewer({ content, isStreaming, hideTopBar }: MarkdownVie
       transition={{ duration: 0.4 }}
       className="h-full flex flex-col"
     >
-
-      {/* Markdown content */}
       <div
         ref={scrollRef}
         className="flex-1 overflow-y-auto px-4 sm:px-8 py-6 scrollbar-thin"

@@ -68,16 +68,16 @@ export function ResearchPlanCard({ planText, statusText, onEdit, onStart, isLoad
         transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
         className="w-full max-w-2xl mx-auto px-4 sm:px-0"
       >
-        <div className="rounded-xl bg-card border border-border/50 shadow-sm overflow-hidden">
+        <div className="rounded-lg bg-card border border-border/50 shadow-sm overflow-hidden">
           {/* Header */}
-          <div className="px-5 sm:px-6 py-5 border-b border-border/40 bg-card-alt">
+          <div className="px-5 sm:px-6 py-5 border-b border-border/40 bg-muted">
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-lg gradient-primary flex items-center justify-center">
                 <Sparkles className="w-4 h-4 text-white" />
               </div>
               <div>
-                <h2 className="text-base font-semibold text-title">研究调研计划</h2>
-                <p className="text-xs text-subtitle mt-0.5">
+                <h2 className="text-base font-semibold text-foreground">研究调研计划</h2>
+                <p className="text-xs text-muted-foreground mt-0.5">
                   AI 已为您生成以下研究大纲，请确认后开始深度研究。
                 </p>
               </div>
@@ -93,7 +93,7 @@ export function ResearchPlanCard({ planText, statusText, onEdit, onStart, isLoad
                   initial={{ opacity: 0, x: -8 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: i * 0.06, duration: 0.35 }}
-                  className="flex items-start gap-3 py-2.5 px-3 rounded-lg hover:bg-hover-bg transition-colors cursor-default"
+                  className="flex items-start gap-3 py-2.5 px-3 rounded-lg hover:bg-accent transition-colors cursor-default"
                 >
                   <div className="mt-1 flex-shrink-0">
                     <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center">
@@ -101,9 +101,9 @@ export function ResearchPlanCard({ planText, statusText, onEdit, onStart, isLoad
                     </div>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-title">{section.title}</p>
+                    <p className="text-sm font-medium text-foreground">{section.title}</p>
                     {section.description && (
-                      <p className="text-xs text-subtitle mt-0.5 leading-relaxed">
+                      <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
                         {section.description}
                       </p>
                     )}
@@ -114,12 +114,12 @@ export function ResearchPlanCard({ planText, statusText, onEdit, onStart, isLoad
           </div>
 
           {/* Footer */}
-          <div className="px-5 sm:px-6 py-4 border-t border-border/40 bg-card-alt flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-            <p className="text-[11px] text-subtitle italic">
+          <div className="px-5 sm:px-6 py-4 border-t border-border/40 bg-muted flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <p className="text-[11px] text-muted-foreground italic">
               {statusText || 'Organizing details...'}
             </p>
             <div className="flex items-center gap-2 w-full sm:w-auto">
-              <Button variant="ghost" size="sm" onClick={() => { setRequirement(''); setDialogOpen(true); }} className="text-xs flex-1 sm:flex-none hover:bg-hover-bg">
+              <Button variant="ghost" size="sm" onClick={() => { setRequirement(''); setDialogOpen(true); }} className="text-xs flex-1 sm:flex-none hover:bg-accent">
                 <Pencil className="w-3.5 h-3.5 mr-1.5" />
                 修改计划
               </Button>
@@ -135,8 +135,8 @@ export function ResearchPlanCard({ planText, statusText, onEdit, onStart, isLoad
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="sm:max-w-lg bg-card border-border/60">
           <DialogHeader>
-            <DialogTitle className="text-title">修改研究计划</DialogTitle>
-            <DialogDescription className="text-subtitle">
+            <DialogTitle className="text-foreground">修改研究计划</DialogTitle>
+            <DialogDescription className="text-muted-foreground">
               输入您的新需求，AI 将根据您的要求重新生成研究计划。
             </DialogDescription>
           </DialogHeader>
@@ -146,7 +146,7 @@ export function ResearchPlanCard({ planText, statusText, onEdit, onStart, isLoad
               onChange={(e) => setRequirement(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="描述您的新需求..."
-              className="flex min-h-[120px] w-full rounded-lg border border-border/60 bg-card-alt px-4 py-3 text-sm text-title placeholder:text-subtitle focus:outline-none focus:border-primary/40 transition-colors resize-none"
+              className="flex min-h-[120px] w-full rounded-lg border border-border/60 bg-muted px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/40 transition-colors resize-none"
               autoFocus
             />
             <div className="flex justify-end">
