@@ -53,24 +53,24 @@ export function Timeline({ thoughts, isActive }: TimelineProps) {
                       ? 'bg-primary/15 text-primary ring-2 ring-primary/10'
                       : isLast && isActive
                         ? 'bg-primary/15 text-primary ring-2 ring-primary/10'
-                        : 'bg-card-alt text-subtitle'
+                        : 'bg-muted text-muted-foreground'
                   }`}>
                     {isSearching ? (
                       <Loader2 className="w-3 h-3 animate-spin" style={{ animationDuration: '2s' }} />
                     ) : isLast && isActive ? (
                       <Icon className="w-3 h-3 animate-pulse-dot" />
                     ) : (
-                      <CheckCircle2 className="w-3 h-3 text-theme-accent" />
+                      <CheckCircle2 className="w-3 h-3 text-emerald-500" />
                     )}
                   </div>
                 </div>
 
                 {/* Content */}
                 <div className="flex-1 min-w-0 pb-3">
-                  <p className="text-[10px] font-semibold text-subtitle uppercase tracking-[0.12em]">
+                  <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-[0.12em]">
                     {labelMap[thought.type]}
                   </p>
-                  <p className="text-xs text-body2 mt-0.5 line-clamp-2 leading-relaxed">
+                  <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2 leading-relaxed">
                     {thought.content}
                   </p>
                 </div>

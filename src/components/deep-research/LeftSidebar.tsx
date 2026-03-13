@@ -37,7 +37,7 @@ export function LeftSidebar({ stage, thoughts, onSend }: LeftSidebarProps) {
   const isActive = stage === 'GENERATING_PLAN' || stage === 'RESEARCHING';
 
   return (
-    <div className="h-full flex flex-col border-r bg-surface-elevated">
+    <div className="h-full flex flex-col border-r bg-muted">
       {/* Header */}
       <div className="px-4 py-4 border-b flex-shrink-0">
         <h2 className="text-sm font-semibold text-foreground tracking-tight">Agent 状态</h2>

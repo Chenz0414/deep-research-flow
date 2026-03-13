@@ -28,12 +28,12 @@ function ImageLightbox({ src, alt, onClose }: { src: string; alt: string; onClos
         transition={{ duration: 0.2 }}
         src={src}
         alt={alt}
-        className="max-w-[90vw] max-h-[85vh] object-contain rounded-xl shadow-2xl"
+        className="max-w-[90vw] max-h-[85vh] object-contain rounded-lg shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       />
       <button
         onClick={onClose}
-        className="absolute top-4 right-4 w-8 h-8 rounded-full bg-background/80 flex items-center justify-center text-title hover:bg-background transition-colors cursor-pointer"
+        className="absolute top-4 right-4 w-8 h-8 rounded-full bg-background/80 flex items-center justify-center text-foreground hover:bg-background transition-colors cursor-pointer"
       >
         <X className="w-4 h-4" />
       </button>
@@ -51,24 +51,22 @@ function SearchRoundCard({ round, onImageClick }: { round: ResearchRound; onImag
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="rounded-xl border border-border/60 bg-card p-4 space-y-3 overflow-hidden"
+      className="rounded-lg border border-border/60 bg-card p-4 space-y-3 overflow-hidden"
     >
-      {/* Search query header */}
       <div className="flex items-start gap-2.5">
         <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
           <Search className="w-3.5 h-3.5 text-primary" />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium text-title leading-snug break-words">{round.query}</p>
+          <p className="text-sm font-medium text-foreground leading-snug break-words">{round.query}</p>
         </div>
       </div>
 
-      {/* References */}
       {refs.length > 0 && (
         <div className="space-y-2">
           <button
             onClick={() => setRefsExpanded(!refsExpanded)}
-            className="flex items-center gap-2 text-xs text-subtitle hover:text-body transition-colors cursor-pointer"
+            className="flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
           >
             <span>参考网站</span>
             <span className="text-primary/70 font-medium">{refs.length}</span>
@@ -90,13 +88,13 @@ function SearchRoundCard({ round, onImageClick }: { round: ResearchRound; onImag
                       href={ref.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-border/50 bg-muted/30 hover:bg-muted/60 transition-colors text-xs text-body max-w-[180px] truncate"
+                      className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-border/50 bg-muted/30 hover:bg-muted/60 transition-colors text-xs text-muted-foreground max-w-[180px] truncate"
                       title={ref.title}
                     >
                       {ref.favicon ? (
                         <img src={ref.favicon} className="w-3.5 h-3.5 rounded-sm flex-shrink-0" alt="" />
                       ) : (
-                        <Globe className="w-3.5 h-3.5 text-subtitle flex-shrink-0" />
+                        <Globe className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
                       )}
                       <span className="truncate">{ref.title}</span>
                     </a>
@@ -108,7 +106,6 @@ function SearchRoundCard({ round, onImageClick }: { round: ResearchRound; onImag
         </div>
       )}
 
-      {/* Images - wrap to next line, no horizontal scroll */}
       {images.length > 0 && (
         <div className="flex flex-wrap gap-2">
           {images.map((img, i) => (
@@ -132,7 +129,7 @@ function TextRoundCard({ round }: { round: ResearchRound }) {
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="rounded-xl border border-border/60 bg-card p-4"
+      className="rounded-lg border border-border/60 bg-card p-4"
     >
       <article className="prose prose-sm max-w-none">
         <ReactMarkdown remarkPlugins={[remarkGfm]}>
@@ -152,11 +149,11 @@ function SummaryCard({ round }: { round: ResearchRound }) {
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="rounded-xl border border-theme-accent/20 bg-card p-5"
+      className="rounded-lg border border-emerald-500/20 bg-card p-5"
     >
       <div className="flex items-center gap-2 mb-3">
-        <FileText className="w-4 h-4 text-theme-accent" />
-        <h3 className="text-sm font-semibold text-title">研究总结</h3>
+        <FileText className="w-4 h-4 text-emerald-500" />
+        <h3 className="text-sm font-semibold text-foreground">研究总结</h3>
       </div>
       <article className="prose prose-sm max-w-none">
         <ReactMarkdown remarkPlugins={[remarkGfm]}>
@@ -191,7 +188,6 @@ export function ResearchProcessView({ rounds, isResearching, hideTopBar }: Resea
       transition={{ duration: 0.4 }}
       className="h-full flex flex-col"
     >
-      {/* Scrolling rounds */}
       <div ref={scrollRef} className="flex-1 overflow-y-auto overflow-x-hidden px-4 sm:px-6 py-4 space-y-4 scrollbar-thin">
         {rounds.map((round) => {
           if (round.type === 'search') {
@@ -203,10 +199,9 @@ export function ResearchProcessView({ rounds, isResearching, hideTopBar }: Resea
           return <TextRoundCard key={round.id} round={round} />;
         })}
 
-        {/* Loading indicator when researching but no rounds yet */}
         {isResearching && rounds.length === 0 && (
           <div className="flex items-center justify-center py-20">
-            <div className="flex items-center gap-3 text-subtitle">
+            <div className="flex items-center gap-3 text-muted-foreground">
               <motion.div
                 animate={{ rotate: 360 }}
                 transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
@@ -219,7 +214,6 @@ export function ResearchProcessView({ rounds, isResearching, hideTopBar }: Resea
         )}
       </div>
 
-      {/* Image lightbox */}
       <AnimatePresence>
         {lightbox && (
           <ImageLightbox

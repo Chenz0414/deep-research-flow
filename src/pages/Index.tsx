@@ -187,7 +187,6 @@ const Index = () => {
   const handleStartResearch = useCallback(() => {
     if (!activeSessionId) return;
 
-    // Force right panel visible when research begins
     setShowRightPanel(true);
 
     setSessions(prev => {
@@ -255,33 +254,30 @@ const Index = () => {
 
       {isActive && activeSession ? (
         <div className="flex-1 min-w-0 flex flex-col h-full">
-          {/* Unified top bar for RESEARCHING / COMPLETED */}
           {(activeSession.stage === 'RESEARCHING' || activeSession.stage === 'COMPLETED') && (
-            <div className="flex items-center justify-between px-4 sm:px-6 py-2 border-b border-border/50 flex-shrink-0 bg-card-alt">
+            <div className="flex items-center justify-between px-4 sm:px-6 py-2 border-b border-border/50 flex-shrink-0 bg-muted">
               <div className="flex items-center gap-3">
-                {/* Mobile sidebar trigger - only visible on mobile */}
                 <button
                   onClick={() => setMobileSidebarOpen(true)}
-                  className="sm:hidden p-1.5 -ml-1 rounded-md hover:bg-hover-bg transition-colors cursor-pointer"
+                  className="sm:hidden p-1.5 -ml-1 rounded-md hover:bg-accent transition-colors cursor-pointer"
                 >
-                  <Menu className="w-4 h-4 text-subtitle" />
+                  <Menu className="w-4 h-4 text-muted-foreground" />
                 </button>
                 <div className="flex items-center gap-1.5">
                   <FileText className="w-3.5 h-3.5 text-primary/60" />
-                  <span className="text-xs font-medium text-title">研究报告</span>
+                  <span className="text-xs font-medium text-foreground">研究报告</span>
                 </div>
                 {activeSession.stage === 'RESEARCHING' && (
                   <span className="tag-pill text-[10px]">生成中...</span>
                 )}
               </div>
-              <Button variant="outline" size="sm" onClick={() => window.print()} className="shadow-sm hover:bg-hover-bg h-7 text-xs">
+              <Button variant="outline" size="sm" onClick={() => window.print()} className="shadow-sm hover:bg-accent h-7 text-xs">
                 <Download className="w-3 h-3 mr-1" />
                 导出 PDF
               </Button>
             </div>
           )}
 
-          {/* Content area */}
           <div className="flex-1 min-w-0 flex overflow-hidden">
             <div className="flex-1 min-w-0">
               <RightPanel

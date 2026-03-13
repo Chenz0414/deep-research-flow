@@ -84,14 +84,13 @@ export function ResearchStatusCard({
     <motion.div
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      className="mx-4 sm:mx-6 mt-4 rounded-xl border border-border/40 overflow-hidden"
+      className="mx-4 sm:mx-6 mt-4 rounded-lg border border-border/40 overflow-hidden"
       style={{
         background: isRunning
           ? 'linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--primary) / 0.03) 100%)'
           : 'hsl(var(--muted) / 0.4)',
       }}
     >
-      {/* Animated top border for active state */}
       {isRunning && (
         <div className="h-[2px] w-full overflow-hidden">
           <motion.div
@@ -109,7 +108,6 @@ export function ResearchStatusCard({
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3">
         <div className="flex items-center gap-3">
-          {/* Status indicator */}
           {isRunning ? (
             <div className="relative flex items-center justify-center w-5 h-5">
               <motion.div
@@ -120,15 +118,15 @@ export function ResearchStatusCard({
               <Loader2 className="w-4 h-4 text-primary animate-spin" />
             </div>
           ) : (
-            <CheckCircle2 className="w-5 h-5 text-theme-accent" />
+            <CheckCircle2 className="w-5 h-5 text-emerald-500" />
           )}
 
           <div className="flex flex-col">
-            <h3 className="text-sm font-semibold text-title">
+            <h3 className="text-sm font-semibold text-foreground">
               {isCompleted ? '研究完成' : isWritingReport ? '正在撰写报告' : '研究中'}
             </h3>
             {!isCompleted && !isWritingReport && progress.totalSections > 0 && (
-              <span className="text-[11px] text-subtitle">
+              <span className="text-[11px] text-muted-foreground">
                 进度 {progress.completedSections}/{progress.totalSections}
               </span>
             )}
@@ -136,12 +134,11 @@ export function ResearchStatusCard({
         </div>
 
         <div className="flex items-center gap-3">
-          {/* Timer */}
           {startTime && (
             <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-mono tabular-nums ${
               isCompleted
-                ? 'bg-theme-accent/8 text-theme-accent'
-                : 'bg-card-alt text-subtitle'
+                ? 'bg-emerald-500/10 text-emerald-500'
+                : 'bg-muted text-muted-foreground'
             }`}>
               <Clock className="w-3 h-3" />
               <span>{isCompleted ? `用时 ${formatElapsed(elapsed)}` : formatElapsed(elapsed)}</span>
@@ -156,7 +153,7 @@ export function ResearchStatusCard({
           </button>
           <button
             onClick={() => setExpanded(!expanded)}
-            className="cursor-pointer text-subtitle hover:text-body transition-colors"
+            className="cursor-pointer text-muted-foreground hover:text-foreground transition-colors"
           >
             <ChevronUp className={`w-4 h-4 transition-transform ${expanded ? '' : 'rotate-180'}`} />
           </button>
@@ -195,13 +192,13 @@ export function ResearchStatusCard({
                 return (
                   <div key={i} className="flex items-center gap-2.5">
                     {completed ? (
-                      <CheckCircle2 className="w-4 h-4 text-theme-accent flex-shrink-0" />
+                      <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0" />
                     ) : isCurrent ? (
                       <Loader2 className="w-4 h-4 text-primary flex-shrink-0 animate-spin" />
                     ) : (
-                      <Circle className="w-4 h-4 text-subtitle/40 flex-shrink-0" />
+                      <Circle className="w-4 h-4 text-muted-foreground/40 flex-shrink-0" />
                     )}
-                    <span className={`text-sm ${completed ? 'text-body' : isCurrent ? 'text-title font-medium' : 'text-subtitle'}`}>
+                    <span className={`text-sm ${completed ? 'text-foreground' : isCurrent ? 'text-foreground font-medium' : 'text-muted-foreground'}`}>
                       {section.title}
                     </span>
                   </div>
