@@ -48,36 +48,10 @@ export default {
           foreground: "hsl(var(--card-foreground))",
         },
         sidebar: {
-          DEFAULT: "hsl(var(--sidebar-background))",
+          DEFAULT: "hsl(var(--sidebar))",
           foreground: "hsl(var(--sidebar-foreground))",
-          primary: "hsl(var(--sidebar-primary))",
-          "primary-foreground": "hsl(var(--sidebar-primary-foreground))",
-          accent: "hsl(var(--sidebar-accent))",
-          "accent-foreground": "hsl(var(--sidebar-accent-foreground))",
-          border: "hsl(var(--sidebar-border))",
-          ring: "hsl(var(--sidebar-ring))",
+          hover: "hsl(var(--sidebar-hover))",
         },
-        /* Semantic text colors */
-        title: "hsl(var(--title))",
-        body2: "hsl(var(--body2))",
-        subtitle: "hsl(var(--subtitle))",
-        /* Theme accent (teal green) */
-        "theme-accent": {
-          DEFAULT: "hsl(var(--theme-accent))",
-          foreground: "hsl(var(--theme-accent-foreground))",
-        },
-        /* Surfaces */
-        "hover-bg": "hsl(var(--hover-bg))",
-        "card-alt": "hsl(var(--card-alt))",
-        "menu-selected": "hsl(var(--menu-selected))",
-        /* Timeline */
-        timeline: {
-          line: "hsl(var(--timeline-line))",
-          "dot-active": "hsl(var(--timeline-dot-active))",
-          "dot-done": "hsl(var(--timeline-dot-done))",
-          "dot-idle": "hsl(var(--timeline-dot-idle))",
-        },
-        "surface-elevated": "hsl(var(--surface-elevated))",
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -127,14 +101,14 @@ export default {
         DEFAULT: {
           css: {
             maxWidth: 'none',
-            color: 'hsl(var(--body2))',
+            color: 'hsl(var(--muted-foreground))',
             a: { color: 'hsl(var(--primary))' },
-            strong: { color: 'hsl(var(--title))' },
-            'h1, h2, h3, h4': { color: 'hsl(var(--title))' },
+            strong: { color: 'hsl(var(--foreground))' },
+            'h1, h2, h3, h4': { color: 'hsl(var(--foreground))' },
             code: { color: 'hsl(var(--primary))' },
             blockquote: { borderLeftColor: 'hsl(var(--primary))' },
             hr: { borderColor: 'hsl(var(--border))' },
-            'thead th': { color: 'hsl(var(--title))' },
+            'thead th': { color: 'hsl(var(--foreground))' },
           },
         },
       },
